@@ -985,7 +985,85 @@
       color: #ef4444;
     }
 
+    /* ── Auth / Sync ── */
+    .auth-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.3rem 0.75rem 0.3rem 0.3rem;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .auth-btn:hover { border-color: var(--text-muted); }
+    .auth-btn img {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+    }
+    .auth-btn .auth-placeholder {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sync-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 0.3rem 0;
+    }
+    .sync-indicator .sync-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+    .sync-indicator .sync-dot.synced { background: #22c55e; }
+    .sync-indicator .sync-dot.syncing { background: #f59e0b; animation: pulse-ring 1s infinite; }
+    .sync-indicator .sync-dot.offline { background: #ef4444; }
+
+    .firebase-setup-banner {
+      background: var(--ai-bg);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .firebase-setup-banner strong { color: var(--ai-accent); }
+    .firebase-setup-banner code {
+      background: var(--bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      .auth-btn span { display: none; }
+      .auth-btn { padding: 0.2rem; border: none; }
+    }
+
   </style>
+
+  <!-- Firebase SDK (compat for simpler API) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -1000,6 +1078,12 @@
       <button class="ai-search-toggle" id="aiSearchToggle" title="Toggle AI Smart Search">AI</button>
     </div>
     <div class="header-actions">
+      <button class="auth-btn" id="authBtn" title="Sign in to sync across devices">
+        <span class="auth-placeholder" id="authAvatar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <span id="authLabel">Sign in</span>
+      </button>
       <button class="btn btn-ai" id="aiChatBtn" title="Open AI Assistant">AI Chat</button>
       <button class="btn btn-primary" id="addNoteBtn">+ New Note</button>
       <button class="btn-icon" id="settingsBtn" title="AI Settings">
@@ -1030,6 +1114,13 @@
             <span class="stat-num" id="statPinned">0</span>
             <span class="stat-label"> Pinned</span>
           </div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <h3>Sync</h3>
+        <div class="sync-indicator" id="syncIndicator">
+          <span class="sync-dot" id="syncDot"></span>
+          <span id="syncText">Local only</span>
         </div>
       </div>
       <div class="sidebar-section">
@@ -1252,6 +1343,13 @@
         <span id="mobileAiStatusText" style="color:var(--text-muted)">Not configured</span>
       </div>
     </div>
+    <div class="sidebar-section">
+      <h3>Sync</h3>
+      <div class="sync-indicator" id="mobileSyncIndicator">
+        <span class="sync-dot" id="mobileSyncDot"></span>
+        <span id="mobileSyncText">Local only</span>
+      </div>
+    </div>
   </div>
 
 <script>
@@ -1266,6 +1364,249 @@
   let viewMode = 'grid';
   let aiSearchMode = false;
   let chatHistory = [];
+
+  // ── Firebase Config ──
+  // Replace these values with your Firebase project config.
+  // Go to https://console.firebase.google.com → Create/select project →
+  // Project Settings → Your apps → Web app → Copy config object
+  const FIREBASE_CONFIG_KEY = 'secondbrain_firebase_config';
+  let firebaseConfig = JSON.parse(localStorage.getItem(FIREBASE_CONFIG_KEY) || 'null');
+  let firebaseReady = false;
+  let currentUser = null;
+  let firestoreUnsubscribe = null;
+  let syncInProgress = false;
+
+  function initFirebase() {
+    if (!firebaseConfig || !firebaseConfig.apiKey) return;
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      firebaseReady = true;
+
+      // Listen for auth state changes
+      firebase.auth().onAuthStateChanged((user) => {
+        currentUser = user;
+        updateAuthUI();
+        if (user) {
+          startFirestoreSync();
+        } else {
+          stopFirestoreSync();
+          updateSyncStatus('offline');
+        }
+      });
+    } catch (err) {
+      console.error('Firebase init error:', err);
+      firebaseReady = false;
+    }
+  }
+
+  function updateAuthUI() {
+    const avatar = document.getElementById('authAvatar');
+    const label = document.getElementById('authLabel');
+    if (currentUser) {
+      if (currentUser.photoURL) {
+        avatar.innerHTML = `<img src="${currentUser.photoURL}" alt="" style="width:28px;height:28px;border-radius:50%;">`;
+      } else {
+        avatar.innerHTML = `<span style="width:28px;height:28px;border-radius:50%;background:var(--ai-accent);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:#fff;">${(currentUser.displayName || currentUser.email || '?')[0].toUpperCase()}</span>`;
+      }
+      label.textContent = 'Sign out';
+    } else {
+      avatar.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+      label.textContent = 'Sign in';
+    }
+  }
+
+  function updateSyncStatus(status) {
+    // status: 'synced', 'syncing', 'offline'
+    const pairs = [
+      ['syncDot', 'syncText'],
+      ['mobileSyncDot', 'mobileSyncText'],
+    ];
+    pairs.forEach(([dotId, textId]) => {
+      const dot = document.getElementById(dotId);
+      const text = document.getElementById(textId);
+      if (!dot) return;
+      dot.className = 'sync-dot';
+      if (status === 'synced') {
+        dot.classList.add('synced');
+        text.textContent = 'Synced';
+      } else if (status === 'syncing') {
+        dot.classList.add('syncing');
+        text.textContent = 'Syncing...';
+      } else {
+        text.textContent = currentUser ? 'Offline' : 'Local only';
+      }
+    });
+  }
+
+  async function signInWithGoogle() {
+    if (!firebaseReady) {
+      showFirebaseSetupPrompt();
+      return;
+    }
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      await firebase.auth().signInWithPopup(provider);
+    } catch (err) {
+      if (err.code !== 'auth/popup-closed-by-user') {
+        alert('Sign-in failed: ' + err.message);
+      }
+    }
+  }
+
+  async function signOut() {
+    if (!firebaseReady) return;
+    try {
+      await firebase.auth().signOut();
+    } catch (err) {
+      console.error('Sign-out error:', err);
+    }
+  }
+
+  function handleAuthClick() {
+    if (currentUser) {
+      signOut();
+    } else {
+      signInWithGoogle();
+    }
+  }
+
+  function showFirebaseSetupPrompt() {
+    const config = prompt(
+      'To enable cross-device sync, paste your Firebase config JSON here.\n\n' +
+      'Get it from: Firebase Console → Project Settings → Your apps → Web app → Config\n\n' +
+      'It looks like: {"apiKey":"...","authDomain":"...","projectId":"...",...}\n\n' +
+      'Paste config JSON:'
+    );
+    if (!config) return;
+    try {
+      const parsed = JSON.parse(config);
+      if (!parsed.apiKey || !parsed.projectId) {
+        alert('Invalid config: must contain apiKey and projectId');
+        return;
+      }
+      firebaseConfig = parsed;
+      localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(parsed));
+      initFirebase();
+      // After init, try signing in
+      setTimeout(() => signInWithGoogle(), 500);
+    } catch (e) {
+      alert('Invalid JSON. Please copy the exact config object from Firebase Console.');
+    }
+  }
+
+  // ── Firestore Sync ──
+  function getNotesCollection() {
+    return firebase.firestore()
+      .collection('users')
+      .doc(currentUser.uid)
+      .collection('notes');
+  }
+
+  async function syncNotesToFirestore() {
+    if (!firebaseReady || !currentUser || syncInProgress) return;
+    syncInProgress = true;
+    updateSyncStatus('syncing');
+    try {
+      const col = getNotesCollection();
+      const batch = firebase.firestore().batch();
+
+      // Get existing remote note IDs
+      const snapshot = await col.get();
+      const remoteIds = new Set();
+      snapshot.forEach(doc => remoteIds.add(doc.id));
+
+      // Upsert all local notes
+      notes.forEach(note => {
+        const ref = col.doc(note.id);
+        batch.set(ref, note);
+        remoteIds.delete(note.id);
+      });
+
+      // Delete remote notes that no longer exist locally
+      remoteIds.forEach(id => {
+        batch.delete(col.doc(id));
+      });
+
+      await batch.commit();
+      updateSyncStatus('synced');
+    } catch (err) {
+      console.error('Sync to Firestore failed:', err);
+      updateSyncStatus('offline');
+    } finally {
+      syncInProgress = false;
+    }
+  }
+
+  function startFirestoreSync() {
+    if (!firebaseReady || !currentUser) return;
+    stopFirestoreSync();
+    updateSyncStatus('syncing');
+
+    const col = getNotesCollection();
+    let isFirstSnapshot = true;
+
+    firestoreUnsubscribe = col.onSnapshot((snapshot) => {
+      if (isFirstSnapshot) {
+        // On first load, merge remote notes with local
+        const remoteNotes = [];
+        snapshot.forEach(doc => remoteNotes.push(doc.data()));
+
+        if (remoteNotes.length > 0) {
+          // Merge: remote wins for conflicts (by id), keep local-only notes
+          const remoteMap = new Map(remoteNotes.map(n => [n.id, n]));
+          const localMap = new Map(notes.map(n => [n.id, n]));
+
+          // Start with all remote notes
+          const merged = new Map(remoteMap);
+
+          // Add local-only notes (not in remote)
+          localMap.forEach((note, id) => {
+            if (!merged.has(id)) {
+              merged.set(id, note);
+            } else {
+              // If local is newer, prefer local
+              const remote = merged.get(id);
+              if (note.updated > remote.updated) {
+                merged.set(id, note);
+              }
+            }
+          });
+
+          notes = Array.from(merged.values());
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+          render();
+
+          // Push merged result back to Firestore
+          syncNotesToFirestore();
+        } else {
+          // No remote notes — push local notes up
+          syncNotesToFirestore();
+        }
+        isFirstSnapshot = false;
+      } else {
+        // Subsequent changes from other devices
+        const remoteNotes = [];
+        snapshot.forEach(doc => remoteNotes.push(doc.data()));
+        notes = remoteNotes;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+        render();
+        scheduleReminders();
+      }
+      updateSyncStatus('synced');
+    }, (err) => {
+      console.error('Firestore listener error:', err);
+      updateSyncStatus('offline');
+    });
+  }
+
+  function stopFirestoreSync() {
+    if (firestoreUnsubscribe) {
+      firestoreUnsubscribe();
+      firestoreUnsubscribe = null;
+    }
+  }
 
   const CATEGORIES = {
     all:     { icon: '\u{1F4CB}', label: 'All Notes' },
@@ -1284,6 +1625,10 @@
 
   function save() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    // Sync to Firestore if authenticated
+    if (firebaseReady && currentUser) {
+      syncNotesToFirestore();
+    }
   }
 
   function formatDate(ts) {
@@ -2266,6 +2611,9 @@ ${content}`;
   document.getElementById('aiDetectDate').addEventListener('click', aiDetectDate);
   document.getElementById('aiSuggestCategory').addEventListener('click', aiSuggestCategory);
 
+  // Auth
+  document.getElementById('authBtn').addEventListener('click', handleAuthClick);
+
   // Settings
   document.getElementById('settingsBtn').addEventListener('click', openSettings);
   document.getElementById('settingsCancel').addEventListener('click', closeSettings);
@@ -2314,6 +2662,7 @@ ${content}`;
   document.getElementById('sidebarOverlay').addEventListener('click', closeSidebarDrawer);
 
   // ── Init ──
+  initFirebase();
   render();
   scheduleReminders();
 
