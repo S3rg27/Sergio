@@ -712,6 +712,54 @@
       color: var(--text-muted);
     }
 
+    /* ── Image Upload ── */
+    .image-upload-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.45rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .image-upload-btn:hover { border-color: var(--ai-accent); color: var(--ai-accent); }
+    .image-preview-area {
+      margin-top: 0.5rem;
+      display: none;
+      position: relative;
+    }
+    .image-preview-area.has-image { display: block; }
+    .image-preview-area img {
+      max-height: 150px;
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      object-fit: contain;
+    }
+    .image-preview-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quick-capture.drag-over {
+      border-color: var(--ai-accent);
+      background: rgba(139, 92, 246, 0.05);
+    }
+
     /* ── AI Processing Overlay ── */
     .ai-processing-overlay {
       position: fixed;
@@ -1166,14 +1214,24 @@
           Brain Dump - just type, AI organises everything
         </h3>
         <div style="display:flex;gap:0.5rem;align-items:flex-start;">
-          <textarea id="quickCaptureInput" placeholder="Dump your thoughts here... ideas, tasks, quotes, anything. AI will figure out the title, category, tags, and summary for you." style="flex:1;"></textarea>
-          <button class="voice-btn" id="quickCaptureVoiceBtn" title="Voice input">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-          </button>
+          <textarea id="quickCaptureInput" placeholder="Dump your thoughts here... ideas, tasks, quotes, anything. You can also paste or drop an image (screenshot of a chat, photo of notes, etc)." style="flex:1;"></textarea>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <button class="voice-btn" id="quickCaptureVoiceBtn" title="Voice input">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </button>
+            <button class="image-upload-btn" id="quickCaptureImageBtn" title="Attach image">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </button>
+            <input type="file" id="quickCaptureImageInput" accept="image/*" style="display:none;" />
+          </div>
+        </div>
+        <div class="image-preview-area" id="quickCaptureImagePreview">
+          <img id="quickCaptureImageImg" />
+          <button class="image-preview-remove" id="quickCaptureImageRemove" title="Remove image">&times;</button>
         </div>
         <div class="voice-status" id="quickCaptureVoiceStatus">Listening...</div>
         <div class="quick-capture-actions">
-          <span class="quick-capture-hint">Type, paste, or tap the mic. AI handles the rest.</span>
+          <span class="quick-capture-hint">Type, paste, drop an image, or tap the mic. AI handles the rest.</span>
           <button class="btn btn-ai" id="quickCaptureBtn">Capture</button>
         </div>
       </div>
@@ -1790,7 +1848,7 @@
     });
   }
 
-  async function callClaude(messages, systemPrompt) {
+  async function callClaude(messages, systemPrompt, maxTokens) {
     const apiKey = getActiveApiKey();
     if (!apiKey) {
       throw new Error('API key not configured. Sign in to use the shared key, or click the settings icon to add your own Anthropic API key.');
@@ -1804,7 +1862,7 @@
 
     const body = {
       model,
-      max_tokens: 1024,
+      max_tokens: maxTokens || 2048,
       messages,
     };
     if (systemPrompt) {
@@ -2220,39 +2278,97 @@
   }
 
   // ── AI Auto-Organize (on save) ──
-  async function aiOrganizeNote(content) {
+  async function aiOrganizeNote(content, imageBase64) {
     const existingTags = [...new Set(notes.flatMap(n => n.tags))];
     const cats = Object.keys(CATEGORIES).filter(k => k !== 'all');
     const now = new Date();
     const today = now.toISOString().split('T')[0];
     const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
-    const prompt = `Today is ${today} and the current time is ${currentTime}. Analyse the following raw thought/note and return a JSON object with these fields:
-- "title": a short, clear title (max 8 words)
+    const hasImage = !!imageBase64;
+
+    const prompt = `Today is ${today} and the current time is ${currentTime}.
+
+${hasImage ? 'The user has attached an image (could be a screenshot of a chat, a photo of handwritten notes, a whiteboard, a receipt, a meme, or anything). Analyse the image thoroughly — read all text, understand context, identify people/topics, and extract every piece of useful information.' : ''}
+
+Analyse the input below and extract ALL distinct notes, tasks, ideas, or pieces of information. If the input contains multiple topics, conversations, or action items, split them into SEPARATE notes. For a chat screenshot, extract each key topic, decision, task, or important piece of information as its own note.
+
+Return a JSON array of note objects. Each note must have:
+- "title": a clear, descriptive title (max 8 words)
 - "category": pick ONE from [${cats.join(', ')}]
-- "tags": array of 2-5 short lowercase tags (prefer reusing these existing tags when relevant: ${existingTags.join(', ') || 'none yet'})
-- "summary": a 1-2 sentence summary of the key point
-- "reminder": if the text mentions a date, deadline, appointment, or time-sensitive task, return an ISO 8601 datetime string. For unspecified times use 09:00. For relative times like "in 5 minutes" or "in 2 hours", calculate from the current time. For relative dates like "tomorrow" calculate from today. If no date reference, return null.
+- "tags": array of 2-5 short lowercase tags (prefer reusing existing tags: ${existingTags.join(', ') || 'none yet'})
+- "summary": a helpful 1-3 sentence summary that captures the key insight or action needed. Be specific and useful — don't just repeat the title.
+- "content": the relevant extracted text or a clear description of what was captured. For images, write out the key information in readable text form.
+- "reminder": if there's a date, deadline, or time-sensitive element, return an ISO 8601 datetime string. For unspecified times use 09:00. For relative times like "in 5 minutes" or "in 2 hours", calculate from current time. For "tomorrow" calculate from today. Otherwise null.
 
-Return ONLY valid JSON, no markdown, no explanation.
+Guidelines:
+- Be smart: if someone says "remind me to pay rent", that's a task with a reminder, not a note.
+- For chat screenshots: extract action items, decisions, important info, plans — skip small talk.
+- If there's only one topic, return an array with one note.
+- Use your judgement to pick the best category. "task" = something to do, "idea" = creative thought, "journal" = personal reflection, "quote" = memorable saying, "link" = URL/resource, "note" = general info.
+- Write summaries that would be helpful when reviewing notes later.
 
-Raw content:
-${content}`;
+Return ONLY a valid JSON array, no markdown fences, no explanation.
+
+${content ? `Text input:\n${content}` : '(No text — analyse the attached image)'}`;
+
+    // Build message content blocks
+    const contentBlocks = [];
+    if (imageBase64) {
+      const mimeMatch = imageBase64.match(/^data:(image\/\w+);base64,/);
+      const mediaType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+      contentBlocks.push({
+        type: 'image',
+        source: { type: 'base64', media_type: mediaType, data: base64Data },
+      });
+    }
+    contentBlocks.push({ type: 'text', text: prompt });
+
+    const systemPrompt = `You are a smart personal assistant that organises information into structured notes. You are thorough, perceptive, and proactive — you notice details others might miss. You extract actionable information and present it clearly. Always return valid JSON arrays. Never wrap in markdown code fences.`;
 
     const result = await callClaude(
-      [{ role: 'user', content: prompt }],
-      'You organise personal notes. Return only valid JSON with title, category, tags, summary, reminder fields. Be concise.'
+      [{ role: 'user', content: contentBlocks }],
+      systemPrompt
     );
 
     const cleaned = result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    return JSON.parse(cleaned);
+    const parsed = JSON.parse(cleaned);
+    // Normalize: always return an array
+    return Array.isArray(parsed) ? parsed : [parsed];
+  }
+
+  // ── Image handling for quick capture ──
+  let capturedImageBase64 = null;
+
+  function setQuickCaptureImage(base64) {
+    capturedImageBase64 = base64;
+    const preview = document.getElementById('quickCaptureImagePreview');
+    const img = document.getElementById('quickCaptureImageImg');
+    if (base64) {
+      img.src = base64;
+      preview.classList.add('has-image');
+    } else {
+      img.src = '';
+      preview.classList.remove('has-image');
+    }
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   }
 
   // ── Quick Capture ──
   async function quickCapture() {
     const input = document.getElementById('quickCaptureInput');
     const rawContent = input.value.trim();
-    if (!rawContent) { input.focus(); return; }
+    const hasImage = !!capturedImageBase64;
+    if (!rawContent && !hasImage) { input.focus(); return; }
 
     if (!hasAiKey()) {
       // Save as-is without AI
@@ -2271,6 +2387,7 @@ ${content}`;
       });
       save();
       input.value = '';
+      setQuickCaptureImage(null);
       render();
       return;
     }
@@ -2279,43 +2396,55 @@ ${content}`;
     const overlay = document.getElementById('aiProcessingOverlay');
     const status = document.getElementById('aiProcessingStatus');
     overlay.classList.add('open');
-    status.textContent = 'Analysing your thought...';
+    status.textContent = hasImage ? 'Analysing image...' : 'Analysing your thought...';
 
     try {
-      status.textContent = 'Generating title, category, tags & summary...';
-      const organised = await aiOrganizeNote(rawContent);
+      status.textContent = hasImage
+        ? 'Reading image and extracting information...'
+        : 'Generating title, category, tags & summary...';
+      const organisedNotes = await aiOrganizeNote(rawContent, capturedImageBase64);
 
       const now = Date.now();
-      const reminder = organised.reminder ? new Date(organised.reminder).toISOString() : '';
-      notes.push({
-        id: generateId(),
-        title: organised.title || rawContent.split('\n')[0].slice(0, 50),
-        category: organised.category || 'note',
-        content: rawContent,
-        link: '',
-        tags: Array.isArray(organised.tags) ? organised.tags : [],
-        reminder,
-        summary: organised.summary || '',
-        pinned: false,
-        created: now,
-        updated: now,
+      let hasReminders = false;
+      organisedNotes.forEach((organised, i) => {
+        const reminder = organised.reminder ? new Date(organised.reminder).toISOString() : '';
+        if (reminder) hasReminders = true;
+        notes.push({
+          id: generateId(),
+          title: organised.title || rawContent.split('\n')[0].slice(0, 50) || 'Untitled',
+          category: organised.category || 'note',
+          content: organised.content || rawContent,
+          link: '',
+          tags: Array.isArray(organised.tags) ? organised.tags : [],
+          reminder,
+          summary: organised.summary || '',
+          pinned: false,
+          created: now + i, // offset so they sort in order
+          updated: now + i,
+        });
       });
 
       save();
       input.value = '';
-      if (reminder) {
+      setQuickCaptureImage(null);
+      if (hasReminders) {
         await requestNotificationPermission();
         scheduleReminders();
       }
       render();
+
+      if (organisedNotes.length > 1) {
+        status.textContent = `Created ${organisedNotes.length} notes!`;
+        await new Promise(r => setTimeout(r, 1200));
+      }
     } catch (err) {
       alert('AI organise failed: ' + err.message + '\n\nSaving as a plain note instead.');
       const now = Date.now();
       notes.push({
         id: generateId(),
-        title: rawContent.split('\n')[0].slice(0, 50) || 'Untitled thought',
+        title: rawContent.split('\n')[0].slice(0, 50) || 'Image note',
         category: 'note',
-        content: rawContent,
+        content: rawContent || '(image attached)',
         link: '',
         tags: [],
         summary: '',
@@ -2325,6 +2454,7 @@ ${content}`;
       });
       save();
       input.value = '';
+      setQuickCaptureImage(null);
       render();
     }
 
@@ -2339,7 +2469,9 @@ ${content}`;
     if (!note) return;
 
     try {
-      const organised = await aiOrganizeNote(note.content || note.title);
+      const organisedNotes = await aiOrganizeNote(note.content || note.title);
+      const organised = organisedNotes[0];
+      if (!organised) return;
 
       // Only fill in what's missing
       if (!note.tags.length && organised.tags) {
@@ -2841,6 +2973,46 @@ ${content}`;
       e.preventDefault();
       quickCapture();
     }
+  });
+
+  // Image upload via button
+  document.getElementById('quickCaptureImageBtn').addEventListener('click', () => {
+    document.getElementById('quickCaptureImageInput').click();
+  });
+  document.getElementById('quickCaptureImageInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) setQuickCaptureImage(await fileToBase64(file));
+    e.target.value = '';
+  });
+  document.getElementById('quickCaptureImageRemove').addEventListener('click', () => {
+    setQuickCaptureImage(null);
+  });
+
+  // Paste image from clipboard
+  document.getElementById('quickCaptureInput').addEventListener('paste', async (e) => {
+    const items = [...(e.clipboardData?.items || [])];
+    const imageItem = items.find(item => item.type.startsWith('image/'));
+    if (imageItem) {
+      e.preventDefault();
+      const file = imageItem.getAsFile();
+      if (file) setQuickCaptureImage(await fileToBase64(file));
+    }
+  });
+
+  // Drag and drop image
+  const qcArea = document.getElementById('quickCapture');
+  qcArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    qcArea.classList.add('drag-over');
+  });
+  qcArea.addEventListener('dragleave', () => {
+    qcArea.classList.remove('drag-over');
+  });
+  qcArea.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    qcArea.classList.remove('drag-over');
+    const file = [...(e.dataTransfer?.files || [])].find(f => f.type.startsWith('image/'));
+    if (file) setQuickCaptureImage(await fileToBase64(file));
   });
   document.getElementById('cancelBtn').addEventListener('click', closeEditor);
   document.getElementById('saveBtn').addEventListener('click', saveNote);
