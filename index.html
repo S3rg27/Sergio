@@ -1364,6 +1364,7 @@
   let viewMode = 'grid';
   let aiSearchMode = false;
   let chatHistory = [];
+  let sharedApiKey = null; // Fetched from Firestore for signed-in users
 
   // ── Firebase Config ──
   // Replace these values with your Firebase project config.
@@ -1398,9 +1399,12 @@
         updateAuthUI();
         if (user) {
           startFirestoreSync();
+          fetchSharedApiKey();
         } else {
           stopFirestoreSync();
+          sharedApiKey = null;
           updateSyncStatus('offline');
+          updateAiStatus();
         }
       });
     } catch (err) {
@@ -1616,6 +1620,41 @@
     }
   }
 
+  // ── Shared API Key from Firestore ──
+  async function fetchSharedApiKey() {
+    if (!firebaseReady || !currentUser) return;
+    try {
+      const doc = await firebase.firestore().collection('appConfig').doc('ai').get();
+      if (doc.exists && doc.data().anthropicKey) {
+        sharedApiKey = doc.data().anthropicKey;
+        updateAiStatus();
+        console.log('Shared API key loaded from Firestore');
+      }
+    } catch (err) {
+      console.warn('Could not fetch shared API key:', err.message);
+    }
+  }
+
+  async function storeSharedApiKey(key) {
+    if (!firebaseReady || !currentUser) {
+      alert('You must be signed in to store the shared API key.');
+      return;
+    }
+    try {
+      await firebase.firestore().collection('appConfig').doc('ai').set({
+        anthropicKey: key,
+        updatedBy: currentUser.uid,
+        updatedAt: Date.now()
+      });
+      sharedApiKey = key;
+      updateAiStatus();
+      console.log('Shared API key stored in Firestore');
+    } catch (err) {
+      console.error('Failed to store shared API key:', err);
+      alert('Failed to store API key: ' + err.message);
+    }
+  }
+
   const CATEGORIES = {
     all:     { icon: '\u{1F4CB}', label: 'All Notes' },
     idea:    { icon: '\u{1F4A1}', label: 'Ideas' },
@@ -1684,7 +1723,13 @@
 
   // ── AI API ──
   function hasAiKey() {
-    return !!(aiSettings.apiKey && aiSettings.apiKey.trim());
+    return !!(aiSettings.apiKey && aiSettings.apiKey.trim()) || !!sharedApiKey;
+  }
+
+  function getActiveApiKey() {
+    // User's own key takes priority, then shared key from Firestore
+    if (aiSettings.apiKey && aiSettings.apiKey.trim()) return aiSettings.apiKey.trim();
+    return sharedApiKey;
   }
 
   function updateAiStatus() {
@@ -1698,7 +1743,7 @@
       if (!dot) return;
       if (hasAiKey()) {
         dot.classList.add('connected');
-        text.textContent = 'Connected';
+        text.textContent = sharedApiKey && !(aiSettings.apiKey && aiSettings.apiKey.trim()) ? 'Connected (shared)' : 'Connected';
       } else {
         dot.classList.remove('connected');
         text.textContent = 'Not configured';
@@ -1707,8 +1752,9 @@
   }
 
   async function callClaude(messages, systemPrompt) {
-    if (!hasAiKey()) {
-      throw new Error('API key not configured. Click the settings icon to add your Anthropic API key.');
+    const apiKey = getActiveApiKey();
+    if (!apiKey) {
+      throw new Error('API key not configured. Sign in to use the shared key, or click the settings icon to add your own Anthropic API key.');
     }
 
     const baseUrl = aiSettings.proxyUrl && aiSettings.proxyUrl.trim()
@@ -1730,7 +1776,7 @@
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': aiSettings.apiKey,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true',
       },
