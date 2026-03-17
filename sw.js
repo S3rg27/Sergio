@@ -129,12 +129,17 @@ self.addEventListener('message', (event) => {
   }
 
   if (event.data?.type === 'SCHEDULE_ALL_REMINDERS') {
+    // Clear previous timers to prevent duplicates
+    if (self._reminderTimers) {
+      self._reminderTimers.forEach(t => clearTimeout(t));
+    }
+    self._reminderTimers = [];
     const reminders = event.data.reminders || [];
     const now = Date.now();
     reminders.forEach(({ noteId, title, body, triggerTime }) => {
       const delay = triggerTime - now;
       if (delay > 0 && delay < 86400000) {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           self.registration.showNotification('SecondBrain Reminder', {
             body: `${title}\n${body}`,
             icon: '/Sergio/favicon.ico',
@@ -149,6 +154,7 @@ self.addEventListener('message', (event) => {
             ],
           });
         }, delay);
+        self._reminderTimers.push(timer);
       }
     });
   }

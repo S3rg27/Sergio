@@ -2696,28 +2696,38 @@ ${content}`;
     const now = Date.now();
     const swReminders = [];
 
+    if (!window._notifiedReminders) window._notifiedReminders = new Set();
+
     notes.forEach(note => {
       if (!note.reminder) return;
       const reminderTime = new Date(note.reminder).getTime();
       const delay = reminderTime - now;
 
       if (delay > 0 && delay < 86400000) { // Within 24 hours
-        // Local timer as backup
-        const timer = setTimeout(() => {
-          showReminderNotification(note);
-          render();
-        }, delay);
-        window._reminderTimers.push(timer);
-
-        // Collect for service worker scheduling (works in background)
-        swReminders.push({
-          noteId: note.id,
-          title: note.title,
-          body: `${CATEGORIES[note.category]?.icon || ''} ${note.summary || note.content.slice(0, 100)}`,
-          triggerTime: reminderTime,
-        });
+        if (swRegistration?.active) {
+          // Let the service worker handle it (works in background on iOS PWA)
+          swReminders.push({
+            noteId: note.id,
+            title: note.title,
+            body: `${CATEGORIES[note.category]?.icon || ''} ${note.summary || note.content.slice(0, 100)}`,
+            triggerTime: reminderTime,
+          });
+        } else {
+          // Fallback: local timer only when no service worker
+          const timer = setTimeout(() => {
+            if (!window._notifiedReminders.has(note.id)) {
+              window._notifiedReminders.add(note.id);
+              showReminderNotification(note);
+            }
+            render();
+          }, delay);
+          window._reminderTimers.push(timer);
+        }
       } else if (delay <= 0 && delay > -300000) { // Overdue by less than 5 min
-        showReminderNotification(note);
+        if (!window._notifiedReminders.has(note.id)) {
+          window._notifiedReminders.add(note.id);
+          showReminderNotification(note);
+        }
       }
     });
 
