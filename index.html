@@ -1290,6 +1290,11 @@
           <option value="claude-opus-4-6">Claude Opus 4.6 (most capable)</option>
         </select>
       </div>
+      <div class="form-group">
+        <label>Push Notifications</label>
+        <button class="btn btn-ai" id="settingsNotificationBtn" style="width:100%">Enable Notifications</button>
+        <p class="hint" id="settingsNotificationStatus"></p>
+      </div>
       <div class="modal-actions">
         <button class="btn btn-ghost" id="settingsCancel">Cancel</button>
         <button class="btn btn-ai" id="settingsSave">Save Settings</button>
@@ -1423,7 +1428,7 @@
           startFirestoreSync();
           fetchSharedApiKey();
           // Subscribe to push notifications once user is authenticated
-          if (Notification.permission === 'granted') {
+          if ('Notification' in window && Notification.permission === 'granted') {
             subscribeToPush();
           }
         } else {
@@ -2445,10 +2450,38 @@ ${content}`;
   }
 
   // ── Settings ──
+  function updateNotificationButton() {
+    const btn = document.getElementById('settingsNotificationBtn');
+    const status = document.getElementById('settingsNotificationStatus');
+    if (!('Notification' in window)) {
+      btn.textContent = 'Not Supported';
+      btn.disabled = true;
+      status.textContent = 'Your browser does not support push notifications. On iPhone, add this app to your Home Screen via Safari first.';
+      return;
+    }
+    if (Notification.permission === 'granted') {
+      btn.textContent = 'Notifications Enabled';
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+      status.textContent = 'Push notifications are enabled.';
+    } else if (Notification.permission === 'denied') {
+      btn.textContent = 'Blocked by Browser';
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+      status.textContent = 'Notifications were blocked. To fix this, go to your browser settings and allow notifications for this site.';
+    } else {
+      btn.textContent = 'Enable Notifications';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      status.textContent = 'Tap to allow reminders to send you push notifications.';
+    }
+  }
+
   function openSettings() {
     document.getElementById('settingsApiKey').value = aiSettings.apiKey || '';
     document.getElementById('settingsProxyUrl').value = aiSettings.proxyUrl || '';
     document.getElementById('settingsModel').value = aiSettings.model || 'claude-haiku-4-5';
+    updateNotificationButton();
     document.getElementById('settingsModal').classList.add('open');
   }
 
@@ -2851,6 +2884,11 @@ ${content}`;
   document.getElementById('settingsBtn').addEventListener('click', openSettings);
   document.getElementById('settingsCancel').addEventListener('click', closeSettings);
   document.getElementById('settingsSave').addEventListener('click', saveSettings);
+  document.getElementById('settingsNotificationBtn').addEventListener('click', async () => {
+    const granted = await requestNotificationPermission();
+    if (granted) subscribeToPush();
+    updateNotificationButton();
+  });
   document.getElementById('settingsModal').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeSettings();
   });
