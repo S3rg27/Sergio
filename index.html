@@ -471,6 +471,7 @@
       right: -420px;
       width: 420px;
       height: 100vh;
+      height: 100dvh;
       background: var(--surface);
       border-left: 1px solid var(--ai-accent);
       z-index: 300;
@@ -539,6 +540,7 @@
 
     .ai-chat-input {
       padding: 1rem;
+      padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
       border-top: 1px solid var(--border);
       display: flex;
       gap: 0.5rem;
@@ -2378,10 +2380,16 @@ ${content}`;
   // ── AI Chat ──
   function openChatPanel() {
     document.getElementById('aiChatPanel').classList.add('open');
+    // Hide mobile bottom bar so chat input isn't obscured
+    const bar = document.getElementById('mobileBottomBar');
+    if (bar) bar.style.display = 'none';
   }
 
   function closeChatPanel() {
     document.getElementById('aiChatPanel').classList.remove('open');
+    // Restore mobile bottom bar
+    const bar = document.getElementById('mobileBottomBar');
+    if (bar) bar.style.display = '';
   }
 
   function addChatMessage(role, text) {
