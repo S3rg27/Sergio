@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Second Brain</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a2e;
+      --surface-2: #16213e;
+      --accent: #e94560;
+      --accent-hover: #ff6b81;
+      --text: #eee;
+      --text-muted: #888;
+      --border: #2a2a4a;
+      --tag-bg: #533483;
+      --tag-text: #e0d0ff;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--accent); }
+
+    /* ── Search ── */
+    .search-bar {
+      flex: 1;
+      max-width: 420px;
+      margin: 0 2rem;
+      position: relative;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 0.6rem 1rem 0.6rem 2.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .search-bar input:focus { border-color: var(--accent); }
+    .search-bar svg {
+      position: absolute;
+      left: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-muted);
+    }
+
+    .header-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 0.55rem 1.2rem;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
+    .btn-ghost.active { color: var(--accent); border-color: var(--accent); }
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.3rem;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .btn-icon:hover { color: var(--accent); background: rgba(233,69,96,0.1); }
+
+    /* ── Layout ── */
+    .app {
+      display: flex;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      flex-shrink: 0;
+    }
+    .sidebar h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .category-list { list-style: none; }
+    .category-list li {
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.15s;
+      margin-bottom: 2px;
+    }
+    .category-list li:hover { background: rgba(255,255,255,0.05); }
+    .category-list li.active { background: rgba(233,69,96,0.15); color: var(--accent); }
+    .category-list li .count {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+    }
+    .sidebar-section { margin-bottom: 2rem; }
+
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag-pill {
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .tag-pill:hover { border-color: var(--tag-text); }
+    .tag-pill.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+
+    /* ── Main Content ── */
+    .main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .view-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .view-controls h2 { font-size: 1.25rem; font-weight: 600; }
+    .view-toggle { display: flex; gap: 0.4rem; }
+
+    /* ── Cards Grid ── */
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .notes-grid.list-view {
+      grid-template-columns: 1fr;
+    }
+
+    .note-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .note-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .note-card .card-category {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .note-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+    .note-card .card-preview {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+    .note-card .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .note-card .card-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+    .note-card .card-tags span {
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+    }
+    .note-card .card-date {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .note-card .card-actions {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      display: flex;
+      gap: 0.25rem;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .note-card:hover .card-actions { opacity: 1; }
+
+    .pin-indicator {
+      color: var(--accent);
+      font-size: 0.8rem;
+      margin-right: 0.25rem;
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 640px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2rem;
+      transform: translateY(20px);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal h2 { margin-bottom: 1.5rem; font-size: 1.2rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--accent);
+    }
+    .form-group textarea { resize: vertical; min-height: 160px; }
+    .form-group select option { background: var(--surface); }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    /* ── Detail View ── */
+    .detail-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s;
+    }
+    .detail-overlay.open { opacity: 1; visibility: visible; }
+    .detail-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 700px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2.5rem;
+      transform: translateY(20px);
+      transition: transform 0.2s;
+    }
+    .detail-overlay.open .detail-panel { transform: translateY(0); }
+    .detail-panel .detail-category {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .detail-panel h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+    .detail-panel .detail-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .detail-panel .detail-content {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      margin-bottom: 1.5rem;
+    }
+    .detail-panel .detail-link {
+      display: inline-block;
+      color: var(--accent);
+      word-break: break-all;
+      margin-bottom: 1.5rem;
+    }
+    .detail-panel .detail-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .detail-panel .detail-tags span {
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+    .detail-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+    }
+    .empty-state svg { width: 64px; height: 64px; stroke: var(--border); margin-bottom: 1rem; }
+    .empty-state h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text); }
+    .empty-state p { font-size: 0.9rem; }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1rem 0;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-item { text-align: center; }
+    .stat-item .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+    .stat-item .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .search-bar { margin: 0 1rem; }
+      header { padding: 0.75rem 1rem; }
+      .main { padding: 1rem; }
+      .notes-grid { grid-template-columns: 1fr; }
+      .modal, .detail-panel { width: 95%; padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">Second<span>Brain</span></div>
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search notes, tags, ideas..." />
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="addNoteBtn">+ New Note</button>
+    </div>
+  </header>
+
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Categories</h3>
+        <ul class="category-list" id="categoryList"></ul>
+      </div>
+      <div class="sidebar-section">
+        <h3>Tags</h3>
+        <div class="tag-cloud" id="tagCloud"></div>
+      </div>
+      <div class="sidebar-section">
+        <h3>Overview</h3>
+        <div class="stats-bar" style="flex-direction:column;align-items:flex-start;gap:0.5rem;border:none;padding:0;">
+          <div class="stat-item" style="text-align:left;">
+            <span class="stat-num" id="statTotal">0</span>
+            <span class="stat-label"> Notes</span>
+          </div>
+          <div class="stat-item" style="text-align:left;">
+            <span class="stat-num" id="statPinned">0</span>
+            <span class="stat-label"> Pinned</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="view-controls">
+        <h2 id="viewTitle">All Notes</h2>
+        <div class="view-toggle">
+          <button class="btn-icon active" id="gridViewBtn" title="Grid view">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </button>
+          <button class="btn-icon" id="listViewBtn" title="List view">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="4" rx="1.5"/><rect x="3" y="10" width="18" height="4" rx="1.5"/><rect x="3" y="16" width="18" height="4" rx="1.5"/></svg>
+          </button>
+          <select id="sortSelect" style="background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:0.3rem 0.5rem;font-size:0.8rem;outline:none;">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="alpha">A-Z</option>
+            <option value="updated">Last Updated</option>
+          </select>
+        </div>
+      </div>
+      <div class="notes-grid" id="notesGrid"></div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay" id="noteModal">
+    <div class="modal">
+      <h2 id="modalTitle">New Note</h2>
+      <input type="hidden" id="noteId" />
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="noteTitle" placeholder="Give your thought a name..." />
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="noteCategory">
+          <option value="idea">Idea</option>
+          <option value="note">Note</option>
+          <option value="link">Link / Resource</option>
+          <option value="quote">Quote</option>
+          <option value="task">Task</option>
+          <option value="journal">Journal</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Content</label>
+        <textarea id="noteContent" placeholder="Write your thoughts..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Link (optional)</label>
+        <input type="url" id="noteLink" placeholder="https://..." />
+      </div>
+      <div class="form-group">
+        <label>Tags (comma separated)</label>
+        <input type="text" id="noteTags" placeholder="productivity, learning, code..." />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="saveBtn">Save Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail View -->
+  <div class="detail-overlay" id="detailOverlay">
+    <div class="detail-panel" id="detailPanel"></div>
+  </div>
+
+<script>
+  // ── State ──
+  const STORAGE_KEY = 'secondbrain_notes';
+  let notes = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  let activeCategory = 'all';
+  let activeTag = null;
+  let searchQuery = '';
+  let viewMode = 'grid';
+
+  const CATEGORIES = {
+    all:     { icon: '📋', label: 'All Notes' },
+    idea:    { icon: '💡', label: 'Ideas' },
+    note:    { icon: '📝', label: 'Notes' },
+    link:    { icon: '🔗', label: 'Links' },
+    quote:   { icon: '💬', label: 'Quotes' },
+    task:    { icon: '✅', label: 'Tasks' },
+    journal: { icon: '📖', label: 'Journal' },
+  };
+
+  // ── Helpers ──
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  }
+
+  function formatDate(ts) {
+    return new Date(ts).toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric'
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ── Filtering & Sorting ──
+  function getFilteredNotes() {
+    let filtered = [...notes];
+
+    if (activeCategory !== 'all') {
+      filtered = filtered.filter(n => n.category === activeCategory);
+    }
+    if (activeTag) {
+      filtered = filtered.filter(n => n.tags.includes(activeTag));
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(n =>
+        n.title.toLowerCase().includes(q) ||
+        n.content.toLowerCase().includes(q) ||
+        n.tags.some(t => t.toLowerCase().includes(q))
+      );
+    }
+
+    const sort = document.getElementById('sortSelect').value;
+    switch (sort) {
+      case 'newest':  filtered.sort((a, b) => b.created - a.created); break;
+      case 'oldest':  filtered.sort((a, b) => a.created - b.created); break;
+      case 'alpha':   filtered.sort((a, b) => a.title.localeCompare(b.title)); break;
+      case 'updated': filtered.sort((a, b) => b.updated - a.updated); break;
+    }
+
+    // Pinned notes always first
+    filtered.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+    return filtered;
+  }
+
+  // ── Render ──
+  function render() {
+    renderSidebar();
+    renderNotes();
+    renderStats();
+  }
+
+  function renderSidebar() {
+    // Categories
+    const catList = document.getElementById('categoryList');
+    catList.innerHTML = Object.entries(CATEGORIES).map(([key, val]) => {
+      const count = key === 'all' ? notes.length : notes.filter(n => n.category === key).length;
+      return `<li class="${activeCategory === key ? 'active' : ''}" data-cat="${key}">
+        ${val.icon} ${val.label} <span class="count">${count}</span>
+      </li>`;
+    }).join('');
+
+    catList.querySelectorAll('li').forEach(li => {
+      li.addEventListener('click', () => {
+        activeCategory = li.dataset.cat;
+        activeTag = null;
+        document.getElementById('viewTitle').textContent = CATEGORIES[activeCategory].label;
+        render();
+      });
+    });
+
+    // Tags
+    const allTags = [...new Set(notes.flatMap(n => n.tags))].sort();
+    const tagCloud = document.getElementById('tagCloud');
+    tagCloud.innerHTML = allTags.length ? allTags.map(t =>
+      `<span class="tag-pill ${activeTag === t ? 'active' : ''}" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</span>`
+    ).join('') : '<span style="font-size:0.8rem;color:var(--text-muted)">No tags yet</span>';
+
+    tagCloud.querySelectorAll('.tag-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        activeTag = activeTag === pill.dataset.tag ? null : pill.dataset.tag;
+        render();
+      });
+    });
+  }
+
+  function renderStats() {
+    document.getElementById('statTotal').textContent = notes.length;
+    document.getElementById('statPinned').textContent = notes.filter(n => n.pinned).length;
+  }
+
+  function renderNotes() {
+    const grid = document.getElementById('notesGrid');
+    const filtered = getFilteredNotes();
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+          <h3>${notes.length === 0 ? 'Your Second Brain is empty' : 'No matching notes'}</h3>
+          <p>${notes.length === 0 ? 'Click "+ New Note" to capture your first thought.' : 'Try adjusting your search or filters.'}</p>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(note => `
+      <div class="note-card" data-id="${note.id}">
+        <div class="card-actions">
+          <button class="btn-icon pin-btn" data-id="${note.id}" title="${note.pinned ? 'Unpin' : 'Pin'}">
+            ${note.pinned ? '📌' : '📍'}
+          </button>
+          <button class="btn-icon edit-btn" data-id="${note.id}" title="Edit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-icon delete-btn" data-id="${note.id}" title="Delete">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+          </button>
+        </div>
+        ${note.pinned ? '<span class="pin-indicator">📌</span>' : ''}
+        <div class="card-category">${CATEGORIES[note.category]?.icon || ''} ${note.category}</div>
+        <h3>${escapeHtml(note.title)}</h3>
+        <div class="card-preview">${escapeHtml(note.content)}</div>
+        <div class="card-footer">
+          <div class="card-tags">${note.tags.slice(0, 3).map(t => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+          <span class="card-date">${formatDate(note.updated)}</span>
+        </div>
+      </div>
+    `).join('');
+
+    // Card click → detail
+    grid.querySelectorAll('.note-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-icon')) return;
+        openDetail(card.dataset.id);
+      });
+    });
+
+    // Pin
+    grid.querySelectorAll('.pin-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const note = notes.find(n => n.id === btn.dataset.id);
+        if (note) { note.pinned = !note.pinned; save(); render(); }
+      });
+    });
+
+    // Edit
+    grid.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openEditor(btn.dataset.id);
+      });
+    });
+
+    // Delete
+    grid.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('Delete this note?')) {
+          notes = notes.filter(n => n.id !== btn.dataset.id);
+          save();
+          render();
+        }
+      });
+    });
+  }
+
+  // ── Detail View ──
+  function openDetail(id) {
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+
+    const panel = document.getElementById('detailPanel');
+    panel.innerHTML = `
+      <div class="detail-category">${CATEGORIES[note.category]?.icon || ''} ${note.category}</div>
+      <h1>${escapeHtml(note.title)}</h1>
+      <div class="detail-meta">
+        <span>Created ${formatDate(note.created)}</span>
+        <span>Updated ${formatDate(note.updated)}</span>
+      </div>
+      <div class="detail-content">${escapeHtml(note.content)}</div>
+      ${note.link ? `<a class="detail-link" href="${escapeHtml(note.link)}" target="_blank" rel="noopener">${escapeHtml(note.link)}</a>` : ''}
+      <div class="detail-tags">${note.tags.map(t => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+      <div class="detail-actions">
+        <button class="btn btn-primary" onclick="closeDetail(); openEditor('${note.id}')">Edit</button>
+        <button class="btn btn-ghost" onclick="closeDetail()">Close</button>
+      </div>
+    `;
+    document.getElementById('detailOverlay').classList.add('open');
+  }
+
+  function closeDetail() {
+    document.getElementById('detailOverlay').classList.remove('open');
+  }
+
+  // ── Editor Modal ──
+  function openEditor(id) {
+    const modal = document.getElementById('noteModal');
+    const note = id ? notes.find(n => n.id === id) : null;
+
+    document.getElementById('modalTitle').textContent = note ? 'Edit Note' : 'New Note';
+    document.getElementById('noteId').value = note ? note.id : '';
+    document.getElementById('noteTitle').value = note ? note.title : '';
+    document.getElementById('noteCategory').value = note ? note.category : 'idea';
+    document.getElementById('noteContent').value = note ? note.content : '';
+    document.getElementById('noteLink').value = note ? (note.link || '') : '';
+    document.getElementById('noteTags').value = note ? note.tags.join(', ') : '';
+
+    modal.classList.add('open');
+    document.getElementById('noteTitle').focus();
+  }
+
+  function closeEditor() {
+    document.getElementById('noteModal').classList.remove('open');
+  }
+
+  function saveNote() {
+    const id = document.getElementById('noteId').value;
+    const title = document.getElementById('noteTitle').value.trim();
+    const category = document.getElementById('noteCategory').value;
+    const content = document.getElementById('noteContent').value.trim();
+    const link = document.getElementById('noteLink').value.trim();
+    const tags = document.getElementById('noteTags').value
+      .split(',').map(t => t.trim()).filter(Boolean);
+
+    if (!title) {
+      document.getElementById('noteTitle').style.borderColor = 'var(--accent)';
+      return;
+    }
+
+    const now = Date.now();
+
+    if (id) {
+      const note = notes.find(n => n.id === id);
+      if (note) {
+        Object.assign(note, { title, category, content, link, tags, updated: now });
+      }
+    } else {
+      notes.push({
+        id: generateId(),
+        title,
+        category,
+        content,
+        link,
+        tags,
+        pinned: false,
+        created: now,
+        updated: now,
+      });
+    }
+
+    save();
+    closeEditor();
+    render();
+  }
+
+  // ── Event Listeners ──
+  document.getElementById('addNoteBtn').addEventListener('click', () => openEditor());
+  document.getElementById('cancelBtn').addEventListener('click', closeEditor);
+  document.getElementById('saveBtn').addEventListener('click', saveNote);
+  document.getElementById('sortSelect').addEventListener('change', render);
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    render();
+  });
+
+  // Close modals on overlay click
+  document.getElementById('noteModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeEditor();
+  });
+  document.getElementById('detailOverlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeDetail();
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeEditor(); closeDetail(); }
+    if (e.key === 'n' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); openEditor(); }
+    if (e.key === '/' && !e.target.closest('input, textarea')) {
+      e.preventDefault();
+      document.getElementById('searchInput').focus();
+    }
+  });
+
+  // View toggle
+  document.getElementById('gridViewBtn').addEventListener('click', () => {
+    viewMode = 'grid';
+    document.getElementById('notesGrid').classList.remove('list-view');
+    document.getElementById('gridViewBtn').classList.add('active');
+    document.getElementById('listViewBtn').classList.remove('active');
+  });
+  document.getElementById('listViewBtn').addEventListener('click', () => {
+    viewMode = 'list';
+    document.getElementById('notesGrid').classList.add('list-view');
+    document.getElementById('listViewBtn').classList.add('active');
+    document.getElementById('gridViewBtn').classList.remove('active');
+  });
+
+  // ── Init ──
+  render();
+</script>
+</body>
+</html>
