@@ -1,5 +1,44 @@
 // SecondBrain Service Worker - Push Notifications + Offline Caching
-const CACHE_NAME = 'secondbrain-v1';
+
+// ── Firebase Messaging (receives FCM pushes when app is closed) ──
+importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+
+firebase.initializeApp({
+  apiKey: "AIzaSyDW7mLwdPh0MMU_EmsfhVygHvc5lCt4pFQ",
+  authDomain: "secondbrainwebapp.firebaseapp.com",
+  projectId: "secondbrainwebapp",
+  storageBucket: "secondbrainwebapp.firebasestorage.app",
+  messagingSenderId: "792657782753",
+  appId: "1:792657782753:web:e43be4cd602ac1b81294a0"
+});
+
+const messaging = firebase.messaging();
+
+// Handle FCM background messages (when app is not in focus)
+messaging.onBackgroundMessage((payload) => {
+  const data = payload.data || {};
+  const notification = payload.notification || {};
+
+  // Don't show if the notification payload already triggered a display
+  if (notification.title) return;
+
+  self.registration.showNotification(notification.title || 'SecondBrain Reminder', {
+    body: notification.body || data.body || 'You have a reminder!',
+    icon: '/Sergio/favicon.ico',
+    badge: '/Sergio/favicon.ico',
+    tag: data.noteId || 'secondbrain-reminder',
+    requireInteraction: true,
+    vibrate: [200, 100, 200],
+    data: { noteId: data.noteId, url: data.url || '/Sergio/' },
+    actions: [
+      { action: 'open', title: 'Open Note' },
+      { action: 'dismiss', title: 'Dismiss' },
+    ],
+  });
+});
+
+const CACHE_NAME = 'secondbrain-v2';
 const ASSETS_TO_CACHE = [
   '/Sergio/',
   '/Sergio/index.html',
