@@ -1,0 +1,16 @@
+{
+  "name": "Second Brain",
+  "short_name": "SecondBrain",
+  "description": "AI-powered personal knowledge management",
+  "start_url": "/Sergio/",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Second Brain</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SecondBrain" />
+  <meta name="theme-color" content="#0f0f0f" />
   <style>
     :root {
       --bg: #0f0f0f;
@@ -1393,6 +1398,14 @@
       }
       firebaseReady = true;
 
+      // Handle redirect result (for PWA/home screen sign-in)
+      firebase.auth().getRedirectResult().catch((err) => {
+        if (err.code !== 'auth/popup-closed-by-user') {
+          console.error('Redirect sign-in error:', err);
+          alert('Sign-in failed: ' + err.message);
+        }
+      });
+
       // Listen for auth state changes
       firebase.auth().onAuthStateChanged((user) => {
         currentUser = user;
@@ -1452,6 +1465,11 @@
     });
   }
 
+  function isStandaloneMode() {
+    return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+  }
+
   async function signInWithGoogle() {
     if (!firebaseReady) {
       showFirebaseSetupPrompt();
@@ -1459,7 +1477,12 @@
     }
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
-      await firebase.auth().signInWithPopup(provider);
+      if (isStandaloneMode()) {
+        // Popup doesn't work in PWA/home screen mode, use redirect
+        await firebase.auth().signInWithRedirect(provider);
+      } else {
+        await firebase.auth().signInWithPopup(provider);
+      }
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
         alert('Sign-in failed: ' + err.message);
