@@ -2218,14 +2218,16 @@
   async function aiOrganizeNote(content) {
     const existingTags = [...new Set(notes.flatMap(n => n.tags))];
     const cats = Object.keys(CATEGORIES).filter(k => k !== 'all');
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
-    const prompt = `Today is ${today}. Analyse the following raw thought/note and return a JSON object with these fields:
+    const prompt = `Today is ${today} and the current time is ${currentTime}. Analyse the following raw thought/note and return a JSON object with these fields:
 - "title": a short, clear title (max 8 words)
 - "category": pick ONE from [${cats.join(', ')}]
 - "tags": array of 2-5 short lowercase tags (prefer reusing these existing tags when relevant: ${existingTags.join(', ') || 'none yet'})
 - "summary": a 1-2 sentence summary of the key point
-- "reminder": if the text mentions a date, deadline, appointment, or time-sensitive task, return an ISO 8601 datetime string. For unspecified times use 09:00. For relative dates like "tomorrow" calculate from today. If no date reference, return null.
+- "reminder": if the text mentions a date, deadline, appointment, or time-sensitive task, return an ISO 8601 datetime string. For unspecified times use 09:00. For relative times like "in 5 minutes" or "in 2 hours", calculate from the current time. For relative dates like "tomorrow" calculate from today. If no date reference, return null.
 
 Return ONLY valid JSON, no markdown, no explanation.
 
@@ -2736,9 +2738,11 @@ ${content}`;
     btn.textContent = 'Detecting...';
 
     try {
-      const today = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+      const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
       const result = await callClaude([
-        { role: 'user', content: `Today is ${today}. Analyse this note and extract any dates, deadlines, or time references. Return ONLY a JSON object with a single field "datetime" in ISO 8601 format (YYYY-MM-DDTHH:MM:SS). If you find a relative reference like "tomorrow" or "next week", calculate the actual date. If no date/time is found, return {"datetime": null}.\n\nTitle: ${title}\nContent: ${content}` }
+        { role: 'user', content: `Today is ${today} and the current time is ${currentTime}. Analyse this note and extract any dates, deadlines, or time references. Return ONLY a JSON object with a single field "datetime" in ISO 8601 format (YYYY-MM-DDTHH:MM:SS). If you find a relative reference like "tomorrow" or "next week", calculate the actual date. For relative times like "in 5 minutes" or "in 2 hours", calculate from the current time. If no date/time is found, return {"datetime": null}.\n\nTitle: ${title}\nContent: ${content}` }
       ], 'You extract dates and deadlines from text. Return only valid JSON with a datetime field. For times not specified, default to 09:00.');
 
       const cleaned = result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -2765,9 +2769,11 @@ ${content}`;
     if (!note || note.reminder) return;
 
     try {
-      const today = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+      const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
       const result = await callClaude([
-        { role: 'user', content: `Today is ${today}. Does this text contain any dates, deadlines, appointments, or time-sensitive tasks? Return ONLY a JSON object: {"datetime": "ISO8601 string"} or {"datetime": null} if none found.\n\n${content}` }
+        { role: 'user', content: `Today is ${today} and the current time is ${currentTime}. Does this text contain any dates, deadlines, appointments, or time-sensitive tasks? Return ONLY a JSON object: {"datetime": "ISO8601 string"} or {"datetime": null} if none found. For relative times like "in 5 minutes" or "in 2 hours", calculate from the current time.\n\n${content}` }
       ], 'Extract dates/deadlines from text. Return only JSON. For unspecified times, use 09:00. Be conservative - only extract clear date references.');
 
       const cleaned = result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
