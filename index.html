@@ -1370,7 +1370,15 @@
   // Go to https://console.firebase.google.com → Create/select project →
   // Project Settings → Your apps → Web app → Copy config object
   const FIREBASE_CONFIG_KEY = 'secondbrain_firebase_config';
-  let firebaseConfig = JSON.parse(localStorage.getItem(FIREBASE_CONFIG_KEY) || 'null');
+  const DEFAULT_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDW7mLwdPh0MMU_EmsfhVygHvc5lCt4pFQ",
+    authDomain: "secondbrainwebapp.firebaseapp.com",
+    projectId: "secondbrainwebapp",
+    storageBucket: "secondbrainwebapp.firebasestorage.app",
+    messagingSenderId: "792657782753",
+    appId: "1:792657782753:web:e43be4cd602ac1b81294a0"
+  };
+  let firebaseConfig = JSON.parse(localStorage.getItem(FIREBASE_CONFIG_KEY) || 'null') || DEFAULT_FIREBASE_CONFIG;
   let firebaseReady = false;
   let currentUser = null;
   let firestoreUnsubscribe = null;
