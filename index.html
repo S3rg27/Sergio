@@ -19,6 +19,8 @@
       --tag-text: #e0d0ff;
       --radius: 12px;
       --shadow: 0 4px 24px rgba(0,0,0,0.4);
+      --ai-accent: #7c3aed;
+      --ai-bg: #1e1b4b;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -68,6 +70,7 @@
       transition: border 0.2s;
     }
     .search-bar input:focus { border-color: var(--accent); }
+    .search-bar input.ai-active { border-color: var(--ai-accent); box-shadow: 0 0 8px rgba(124,58,237,0.3); }
     .search-bar svg {
       position: absolute;
       left: 0.8rem;
@@ -77,6 +80,23 @@
       height: 16px;
       stroke: var(--text-muted);
     }
+    .search-bar .ai-search-toggle {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--ai-bg);
+      color: var(--ai-accent);
+      border: 1px solid var(--ai-accent);
+      border-radius: 999px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .search-bar .ai-search-toggle:hover,
+    .search-bar .ai-search-toggle.active { background: var(--ai-accent); color: #fff; }
 
     .header-actions { display: flex; gap: 0.75rem; align-items: center; }
 
@@ -95,6 +115,11 @@
       color: #fff;
     }
     .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-ai {
+      background: var(--ai-accent);
+      color: #fff;
+    }
+    .btn-ai:hover { background: #6d28d9; transform: translateY(-1px); }
     .btn-ghost {
       background: transparent;
       color: var(--text-muted);
@@ -329,6 +354,11 @@
     }
     .form-group textarea { resize: vertical; min-height: 160px; }
     .form-group select option { background: var(--surface); }
+    .form-group .hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
 
     .modal-actions {
       display: flex;
@@ -429,6 +459,207 @@
     .stat-item .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
     .stat-item .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
+    /* ── AI Chat Panel ── */
+    .ai-chat-panel {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 420px;
+      height: 100vh;
+      background: var(--surface);
+      border-left: 1px solid var(--ai-accent);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s ease;
+      box-shadow: -4px 0 24px rgba(124,58,237,0.2);
+    }
+    .ai-chat-panel.open { right: 0; }
+
+    .ai-chat-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--ai-bg);
+    }
+    .ai-chat-header h3 {
+      font-size: 1rem;
+      color: var(--ai-accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ai-chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .ai-msg {
+      max-width: 90%;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .ai-msg.user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .ai-msg.assistant {
+      align-self: flex-start;
+      background: var(--ai-bg);
+      color: var(--text);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-bottom-left-radius: 4px;
+    }
+    .ai-msg.system {
+      align-self: center;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-style: italic;
+      padding: 0.25rem;
+    }
+
+    .ai-chat-input {
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 0.5rem;
+    }
+    .ai-chat-input textarea {
+      flex: 1;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      resize: none;
+      outline: none;
+      min-height: 42px;
+      max-height: 120px;
+    }
+    .ai-chat-input textarea:focus { border-color: var(--ai-accent); }
+    .ai-chat-input button {
+      padding: 0 1rem;
+      background: var(--ai-accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .ai-chat-input button:hover { background: #6d28d9; }
+    .ai-chat-input button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── AI Smart Search Results ── */
+    .ai-search-result {
+      background: var(--ai-bg);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      grid-column: 1 / -1;
+    }
+    .ai-search-result h4 {
+      color: var(--ai-accent);
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .ai-search-result .ai-answer {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    /* ── AI Suggest Button ── */
+    .ai-suggest-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .btn-ai-small {
+      padding: 0.35rem 0.75rem;
+      background: var(--ai-bg);
+      color: var(--ai-accent);
+      border: 1px solid var(--ai-accent);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ai-small:hover { background: var(--ai-accent); color: #fff; }
+    .btn-ai-small:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .ai-suggestions {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+    .ai-suggestion-chip {
+      background: var(--ai-bg);
+      color: var(--ai-accent);
+      border: 1px solid rgba(124,58,237,0.4);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .ai-suggestion-chip:hover {
+      background: var(--ai-accent);
+      color: #fff;
+    }
+
+    /* ── AI Loading Spinner ── */
+    .ai-loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--ai-accent);
+      font-size: 0.85rem;
+    }
+    .ai-loading .dots::after {
+      content: '';
+      animation: dots 1.5s steps(4,end) infinite;
+    }
+    @keyframes dots {
+      0% { content: ''; }
+      25% { content: '.'; }
+      50% { content: '..'; }
+      75% { content: '...'; }
+    }
+
+    /* ── Settings indicator ── */
+    .ai-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      display: inline-block;
+    }
+    .ai-status.connected { background: #22c55e; }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .sidebar { display: none; }
@@ -437,6 +668,7 @@
       .main { padding: 1rem; }
       .notes-grid { grid-template-columns: 1fr; }
       .modal, .detail-panel { width: 95%; padding: 1.5rem; }
+      .ai-chat-panel { width: 100%; right: -100%; }
     }
   </style>
 </head>
@@ -450,9 +682,14 @@
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
       <input type="text" id="searchInput" placeholder="Search notes, tags, ideas..." />
+      <button class="ai-search-toggle" id="aiSearchToggle" title="Toggle AI Smart Search">AI</button>
     </div>
     <div class="header-actions">
+      <button class="btn btn-ai" id="aiChatBtn" title="Open AI Assistant">AI Chat</button>
       <button class="btn btn-primary" id="addNoteBtn">+ New Note</button>
+      <button class="btn-icon" id="settingsBtn" title="AI Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </button>
     </div>
   </header>
 
@@ -480,6 +717,13 @@
           </div>
         </div>
       </div>
+      <div class="sidebar-section">
+        <h3>AI Status</h3>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;">
+          <span class="ai-status" id="aiStatusDot"></span>
+          <span id="aiStatusText" style="color:var(--text-muted)">Not configured</span>
+        </div>
+      </div>
     </aside>
 
     <!-- Main -->
@@ -501,6 +745,7 @@
           </select>
         </div>
       </div>
+      <div id="aiSearchResultArea"></div>
       <div class="notes-grid" id="notesGrid"></div>
     </main>
   </div>
@@ -524,6 +769,10 @@
           <option value="task">Task</option>
           <option value="journal">Journal</option>
         </select>
+        <div class="ai-suggest-row">
+          <button class="btn-ai-small" id="aiSuggestCategory" title="AI suggests a category">Suggest Category</button>
+          <span id="aiCategorySuggestion"></span>
+        </div>
       </div>
       <div class="form-group">
         <label>Content</label>
@@ -536,6 +785,10 @@
       <div class="form-group">
         <label>Tags (comma separated)</label>
         <input type="text" id="noteTags" placeholder="productivity, learning, code..." />
+        <div class="ai-suggest-row">
+          <button class="btn-ai-small" id="aiSuggestTags" title="AI suggests tags">Suggest Tags</button>
+        </div>
+        <div class="ai-suggestions" id="aiTagSuggestions"></div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
@@ -549,23 +802,76 @@
     <div class="detail-panel" id="detailPanel"></div>
   </div>
 
+  <!-- AI Chat Panel -->
+  <div class="ai-chat-panel" id="aiChatPanel">
+    <div class="ai-chat-header">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        AI Assistant
+      </h3>
+      <button class="btn-icon" id="aiChatClose" style="color:var(--text);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ai-chat-messages" id="aiChatMessages">
+      <div class="ai-msg system">I can help brainstorm ideas, summarize notes, find connections, and more. Ask me anything about your Second Brain!</div>
+    </div>
+    <div class="ai-chat-input">
+      <textarea id="aiChatInput" placeholder="Ask about your notes..." rows="1"></textarea>
+      <button id="aiChatSend">Send</button>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+      <h2>AI Settings</h2>
+      <div class="form-group">
+        <label>Anthropic API Key</label>
+        <input type="password" id="settingsApiKey" placeholder="sk-ant-..." />
+        <p class="hint">Your key is stored locally in your browser and never sent anywhere except the Anthropic API.</p>
+      </div>
+      <div class="form-group">
+        <label>API Proxy URL (optional)</label>
+        <input type="text" id="settingsProxyUrl" placeholder="https://your-proxy.workers.dev" />
+        <p class="hint">If direct browser calls fail (CORS), route through a proxy. Leave blank to call the Anthropic API directly.</p>
+      </div>
+      <div class="form-group">
+        <label>Model</label>
+        <select id="settingsModel">
+          <option value="claude-haiku-4-5">Claude Haiku 4.5 (fast, cheap)</option>
+          <option value="claude-sonnet-4-6">Claude Sonnet 4.6 (balanced)</option>
+          <option value="claude-opus-4-6">Claude Opus 4.6 (most capable)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="settingsCancel">Cancel</button>
+        <button class="btn btn-ai" id="settingsSave">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
 <script>
   // ── State ──
   const STORAGE_KEY = 'secondbrain_notes';
+  const AI_SETTINGS_KEY = 'secondbrain_ai_settings';
   let notes = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  let aiSettings = JSON.parse(localStorage.getItem(AI_SETTINGS_KEY) || '{}');
   let activeCategory = 'all';
   let activeTag = null;
   let searchQuery = '';
   let viewMode = 'grid';
+  let aiSearchMode = false;
+  let chatHistory = [];
 
   const CATEGORIES = {
-    all:     { icon: '📋', label: 'All Notes' },
-    idea:    { icon: '💡', label: 'Ideas' },
-    note:    { icon: '📝', label: 'Notes' },
-    link:    { icon: '🔗', label: 'Links' },
-    quote:   { icon: '💬', label: 'Quotes' },
-    task:    { icon: '✅', label: 'Tasks' },
-    journal: { icon: '📖', label: 'Journal' },
+    all:     { icon: '\u{1F4CB}', label: 'All Notes' },
+    idea:    { icon: '\u{1F4A1}', label: 'Ideas' },
+    note:    { icon: '\u{1F4DD}', label: 'Notes' },
+    link:    { icon: '\u{1F517}', label: 'Links' },
+    quote:   { icon: '\u{1F4AC}', label: 'Quotes' },
+    task:    { icon: '\u{2705}', label: 'Tasks' },
+    journal: { icon: '\u{1F4D6}', label: 'Journal' },
   };
 
   // ── Helpers ──
@@ -589,6 +895,64 @@
     return div.innerHTML;
   }
 
+  // ── AI API ──
+  function hasAiKey() {
+    return !!(aiSettings.apiKey && aiSettings.apiKey.trim());
+  }
+
+  function updateAiStatus() {
+    const dot = document.getElementById('aiStatusDot');
+    const text = document.getElementById('aiStatusText');
+    if (hasAiKey()) {
+      dot.classList.add('connected');
+      text.textContent = 'Connected';
+    } else {
+      dot.classList.remove('connected');
+      text.textContent = 'Not configured';
+    }
+  }
+
+  async function callClaude(messages, systemPrompt) {
+    if (!hasAiKey()) {
+      throw new Error('API key not configured. Click the settings icon to add your Anthropic API key.');
+    }
+
+    const baseUrl = aiSettings.proxyUrl && aiSettings.proxyUrl.trim()
+      ? aiSettings.proxyUrl.trim().replace(/\/+$/, '')
+      : 'https://api.anthropic.com';
+
+    const model = aiSettings.model || 'claude-haiku-4-5';
+
+    const body = {
+      model,
+      max_tokens: 1024,
+      messages,
+    };
+    if (systemPrompt) {
+      body.system = systemPrompt;
+    }
+
+    const res = await fetch(baseUrl + '/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': aiSettings.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error ${res.status}`);
+    }
+
+    const data = await res.json();
+    const textBlock = data.content.find(b => b.type === 'text');
+    return textBlock ? textBlock.text : '';
+  }
+
   // ── Filtering & Sorting ──
   function getFilteredNotes() {
     let filtered = [...notes];
@@ -599,7 +963,7 @@
     if (activeTag) {
       filtered = filtered.filter(n => n.tags.includes(activeTag));
     }
-    if (searchQuery) {
+    if (searchQuery && !aiSearchMode) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(n =>
         n.title.toLowerCase().includes(q) ||
@@ -616,7 +980,6 @@
       case 'updated': filtered.sort((a, b) => b.updated - a.updated); break;
     }
 
-    // Pinned notes always first
     filtered.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
     return filtered;
@@ -627,10 +990,10 @@
     renderSidebar();
     renderNotes();
     renderStats();
+    updateAiStatus();
   }
 
   function renderSidebar() {
-    // Categories
     const catList = document.getElementById('categoryList');
     catList.innerHTML = Object.entries(CATEGORIES).map(([key, val]) => {
       const count = key === 'all' ? notes.length : notes.filter(n => n.category === key).length;
@@ -648,7 +1011,6 @@
       });
     });
 
-    // Tags
     const allTags = [...new Set(notes.flatMap(n => n.tags))].sort();
     const tagCloud = document.getElementById('tagCloud');
     tagCloud.innerHTML = allTags.length ? allTags.map(t =>
@@ -688,7 +1050,7 @@
       <div class="note-card" data-id="${note.id}">
         <div class="card-actions">
           <button class="btn-icon pin-btn" data-id="${note.id}" title="${note.pinned ? 'Unpin' : 'Pin'}">
-            ${note.pinned ? '📌' : '📍'}
+            ${note.pinned ? '\u{1F4CC}' : '\u{1F4CD}'}
           </button>
           <button class="btn-icon edit-btn" data-id="${note.id}" title="Edit">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -697,7 +1059,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
           </button>
         </div>
-        ${note.pinned ? '<span class="pin-indicator">📌</span>' : ''}
+        ${note.pinned ? '<span class="pin-indicator">\u{1F4CC}</span>' : ''}
         <div class="card-category">${CATEGORIES[note.category]?.icon || ''} ${note.category}</div>
         <h3>${escapeHtml(note.title)}</h3>
         <div class="card-preview">${escapeHtml(note.content)}</div>
@@ -708,7 +1070,6 @@
       </div>
     `).join('');
 
-    // Card click → detail
     grid.querySelectorAll('.note-card').forEach(card => {
       card.addEventListener('click', (e) => {
         if (e.target.closest('.btn-icon')) return;
@@ -716,7 +1077,6 @@
       });
     });
 
-    // Pin
     grid.querySelectorAll('.pin-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -725,7 +1085,6 @@
       });
     });
 
-    // Edit
     grid.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -733,7 +1092,6 @@
       });
     });
 
-    // Delete
     grid.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -764,6 +1122,7 @@
       <div class="detail-tags">${note.tags.map(t => `<span>${escapeHtml(t)}</span>`).join('')}</div>
       <div class="detail-actions">
         <button class="btn btn-primary" onclick="closeDetail(); openEditor('${note.id}')">Edit</button>
+        <button class="btn btn-ai" onclick="summarizeNote('${note.id}')">Summarize</button>
         <button class="btn btn-ghost" onclick="closeDetail()">Close</button>
       </div>
     `;
@@ -772,6 +1131,24 @@
 
   function closeDetail() {
     document.getElementById('detailOverlay').classList.remove('open');
+  }
+
+  async function summarizeNote(id) {
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+
+    openChatPanel();
+    addChatMessage('system', `Summarizing "${note.title}"...`);
+
+    try {
+      const result = await callClaude([
+        { role: 'user', content: `Summarize this note concisely:\n\nTitle: ${note.title}\nCategory: ${note.category}\n\n${note.content}` }
+      ], 'You are a helpful assistant that summarizes notes clearly and concisely.');
+
+      addChatMessage('assistant', result);
+    } catch (err) {
+      addChatMessage('system', 'Error: ' + err.message);
+    }
   }
 
   // ── Editor Modal ──
@@ -786,6 +1163,8 @@
     document.getElementById('noteContent').value = note ? note.content : '';
     document.getElementById('noteLink').value = note ? (note.link || '') : '';
     document.getElementById('noteTags').value = note ? note.tags.join(', ') : '';
+    document.getElementById('aiTagSuggestions').innerHTML = '';
+    document.getElementById('aiCategorySuggestion').textContent = '';
 
     modal.classList.add('open');
     document.getElementById('noteTitle').focus();
@@ -835,6 +1214,189 @@
     render();
   }
 
+  // ── AI Auto-Organize ──
+  async function aiSuggestTags() {
+    const btn = document.getElementById('aiSuggestTags');
+    const title = document.getElementById('noteTitle').value.trim();
+    const content = document.getElementById('noteContent').value.trim();
+
+    if (!title && !content) { alert('Add a title or content first.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Thinking...';
+
+    try {
+      const existingTags = [...new Set(notes.flatMap(n => n.tags))];
+      const result = await callClaude([
+        { role: 'user', content: `Suggest 3-5 short tags for this note. Return ONLY a JSON array of strings, nothing else.\n\nExisting tags in the system: ${existingTags.join(', ') || 'none'}\n\nTitle: ${title}\nContent: ${content}` }
+      ], 'You suggest concise, relevant tags for notes. Return only a JSON array of lowercase tag strings. Prefer reusing existing tags when relevant.');
+
+      const tags = JSON.parse(result);
+      const container = document.getElementById('aiTagSuggestions');
+      container.innerHTML = tags.map(t =>
+        `<span class="ai-suggestion-chip" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</span>`
+      ).join('');
+
+      container.querySelectorAll('.ai-suggestion-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const input = document.getElementById('noteTags');
+          const current = input.value.split(',').map(t => t.trim()).filter(Boolean);
+          if (!current.includes(chip.dataset.tag)) {
+            current.push(chip.dataset.tag);
+            input.value = current.join(', ');
+          }
+          chip.style.background = 'var(--ai-accent)';
+          chip.style.color = '#fff';
+        });
+      });
+    } catch (err) {
+      document.getElementById('aiTagSuggestions').innerHTML =
+        `<span style="color:var(--accent);font-size:0.8rem">${escapeHtml(err.message)}</span>`;
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Suggest Tags';
+  }
+
+  async function aiSuggestCategory() {
+    const btn = document.getElementById('aiSuggestCategory');
+    const title = document.getElementById('noteTitle').value.trim();
+    const content = document.getElementById('noteContent').value.trim();
+
+    if (!title && !content) { alert('Add a title or content first.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Thinking...';
+
+    try {
+      const cats = Object.keys(CATEGORIES).filter(k => k !== 'all');
+      const result = await callClaude([
+        { role: 'user', content: `Choose the single best category for this note from: ${cats.join(', ')}. Return ONLY the category name, nothing else.\n\nTitle: ${title}\nContent: ${content}` }
+      ], 'You classify notes into categories. Return only the category name, lowercase, nothing else.');
+
+      const suggested = result.trim().toLowerCase();
+      if (cats.includes(suggested)) {
+        document.getElementById('noteCategory').value = suggested;
+        document.getElementById('aiCategorySuggestion').innerHTML =
+          `<span style="color:var(--ai-accent);font-size:0.8rem">Set to "${suggested}"</span>`;
+      }
+    } catch (err) {
+      document.getElementById('aiCategorySuggestion').innerHTML =
+        `<span style="color:var(--accent);font-size:0.8rem">${escapeHtml(err.message)}</span>`;
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Suggest Category';
+  }
+
+  // ── AI Smart Search ──
+  let aiSearchDebounce = null;
+
+  async function performAiSearch(query) {
+    const area = document.getElementById('aiSearchResultArea');
+
+    if (!query.trim()) {
+      area.innerHTML = '';
+      return;
+    }
+
+    if (!hasAiKey()) {
+      area.innerHTML = `<div class="ai-search-result"><h4>AI Smart Search</h4><div class="ai-answer">Configure your API key in Settings to use Smart Search.</div></div>`;
+      return;
+    }
+
+    area.innerHTML = `<div class="ai-search-result"><h4>AI Smart Search</h4><div class="ai-answer"><span class="ai-loading">Searching<span class="dots"></span></span></div></div>`;
+
+    try {
+      const noteSummaries = notes.map(n =>
+        `[ID:${n.id}] "${n.title}" (${n.category}) - ${n.content.slice(0, 200)}${n.content.length > 200 ? '...' : ''} [tags: ${n.tags.join(', ')}]`
+      ).join('\n');
+
+      const result = await callClaude([
+        { role: 'user', content: `Here are all the notes in my Second Brain:\n\n${noteSummaries}\n\nQuestion: ${query}\n\nAnswer my question using the notes above. Reference specific note titles when relevant. If the answer isn't in the notes, say so and suggest what I might want to capture.` }
+      ], 'You are a smart search assistant for a personal knowledge base. Answer questions using the provided notes. Be concise and reference specific notes by title.');
+
+      area.innerHTML = `<div class="ai-search-result"><h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> AI Answer</h4><div class="ai-answer">${escapeHtml(result)}</div></div>`;
+    } catch (err) {
+      area.innerHTML = `<div class="ai-search-result"><h4>AI Smart Search</h4><div class="ai-answer" style="color:var(--accent)">${escapeHtml(err.message)}</div></div>`;
+    }
+  }
+
+  // ── AI Chat ──
+  function openChatPanel() {
+    document.getElementById('aiChatPanel').classList.add('open');
+  }
+
+  function closeChatPanel() {
+    document.getElementById('aiChatPanel').classList.remove('open');
+  }
+
+  function addChatMessage(role, text) {
+    const container = document.getElementById('aiChatMessages');
+    const div = document.createElement('div');
+    div.className = `ai-msg ${role}`;
+    div.textContent = text;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+
+    if (role !== 'system') {
+      chatHistory.push({ role, content: text });
+    }
+  }
+
+  async function sendChatMessage() {
+    const input = document.getElementById('aiChatInput');
+    const sendBtn = document.getElementById('aiChatSend');
+    const message = input.value.trim();
+    if (!message) return;
+
+    addChatMessage('user', message);
+    input.value = '';
+    sendBtn.disabled = true;
+
+    try {
+      const notesContext = notes.length > 0
+        ? notes.map(n => `- "${n.title}" (${n.category}): ${n.content.slice(0, 150)}${n.content.length > 150 ? '...' : ''} [tags: ${n.tags.join(', ')}]`).join('\n')
+        : '(No notes yet)';
+
+      const systemPrompt = `You are a helpful AI assistant for a personal Second Brain note-taking app. The user has ${notes.length} notes. Here is a summary of their notes:\n\n${notesContext}\n\nHelp them brainstorm, find connections between notes, suggest ideas, summarize, expand on topics, or answer questions. Be concise and friendly.`;
+
+      const apiMessages = chatHistory.slice(-20).map(m => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+      const result = await callClaude(apiMessages, systemPrompt);
+      addChatMessage('assistant', result);
+    } catch (err) {
+      addChatMessage('system', 'Error: ' + err.message);
+    }
+
+    sendBtn.disabled = false;
+    input.focus();
+  }
+
+  // ── Settings ──
+  function openSettings() {
+    document.getElementById('settingsApiKey').value = aiSettings.apiKey || '';
+    document.getElementById('settingsProxyUrl').value = aiSettings.proxyUrl || '';
+    document.getElementById('settingsModel').value = aiSettings.model || 'claude-haiku-4-5';
+    document.getElementById('settingsModal').classList.add('open');
+  }
+
+  function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('open');
+  }
+
+  function saveSettings() {
+    aiSettings.apiKey = document.getElementById('settingsApiKey').value.trim();
+    aiSettings.proxyUrl = document.getElementById('settingsProxyUrl').value.trim();
+    aiSettings.model = document.getElementById('settingsModel').value;
+    localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(aiSettings));
+    closeSettings();
+    updateAiStatus();
+  }
+
   // ── Event Listeners ──
   document.getElementById('addNoteBtn').addEventListener('click', () => openEditor());
   document.getElementById('cancelBtn').addEventListener('click', closeEditor);
@@ -843,7 +1405,50 @@
 
   document.getElementById('searchInput').addEventListener('input', (e) => {
     searchQuery = e.target.value;
+    if (aiSearchMode) {
+      clearTimeout(aiSearchDebounce);
+      aiSearchDebounce = setTimeout(() => performAiSearch(searchQuery), 800);
+    }
     render();
+  });
+
+  // AI Search Toggle
+  document.getElementById('aiSearchToggle').addEventListener('click', () => {
+    aiSearchMode = !aiSearchMode;
+    const btn = document.getElementById('aiSearchToggle');
+    const input = document.getElementById('searchInput');
+    btn.classList.toggle('active', aiSearchMode);
+    input.classList.toggle('ai-active', aiSearchMode);
+    input.placeholder = aiSearchMode ? 'Ask AI about your notes...' : 'Search notes, tags, ideas...';
+
+    if (!aiSearchMode) {
+      document.getElementById('aiSearchResultArea').innerHTML = '';
+    } else if (searchQuery) {
+      performAiSearch(searchQuery);
+    }
+  });
+
+  // AI Chat
+  document.getElementById('aiChatBtn').addEventListener('click', openChatPanel);
+  document.getElementById('aiChatClose').addEventListener('click', closeChatPanel);
+  document.getElementById('aiChatSend').addEventListener('click', sendChatMessage);
+  document.getElementById('aiChatInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  });
+
+  // AI Suggestions
+  document.getElementById('aiSuggestTags').addEventListener('click', aiSuggestTags);
+  document.getElementById('aiSuggestCategory').addEventListener('click', aiSuggestCategory);
+
+  // Settings
+  document.getElementById('settingsBtn').addEventListener('click', openSettings);
+  document.getElementById('settingsCancel').addEventListener('click', closeSettings);
+  document.getElementById('settingsSave').addEventListener('click', saveSettings);
+  document.getElementById('settingsModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeSettings();
   });
 
   // Close modals on overlay click
@@ -856,7 +1461,7 @@
 
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeEditor(); closeDetail(); }
+    if (e.key === 'Escape') { closeEditor(); closeDetail(); closeSettings(); closeChatPanel(); }
     if (e.key === 'n' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); openEditor(); }
     if (e.key === '/' && !e.target.closest('input, textarea')) {
       e.preventDefault();
