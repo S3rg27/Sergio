@@ -1398,11 +1398,17 @@
       }
       firebaseReady = true;
 
-      // Handle redirect result (for PWA/home screen sign-in)
-      firebase.auth().getRedirectResult().catch((err) => {
+      // Ensure auth persists across page reloads (important for PWA)
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+      // Handle redirect result if returning from a redirect sign-in
+      firebase.auth().getRedirectResult().then((result) => {
+        if (result && result.user) {
+          console.log('Redirect sign-in successful:', result.user.displayName);
+        }
+      }).catch((err) => {
         if (err.code !== 'auth/popup-closed-by-user') {
           console.error('Redirect sign-in error:', err);
-          alert('Sign-in failed: ' + err.message);
         }
       });
 
@@ -1465,26 +1471,24 @@
     });
   }
 
-  function isStandaloneMode() {
-    return window.matchMedia('(display-mode: standalone)').matches
-      || window.navigator.standalone === true;
-  }
-
   async function signInWithGoogle() {
     if (!firebaseReady) {
       showFirebaseSetupPrompt();
       return;
     }
+    const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      if (isStandaloneMode()) {
-        // Popup doesn't work in PWA/home screen mode, use redirect
-        await firebase.auth().signInWithRedirect(provider);
-      } else {
-        await firebase.auth().signInWithPopup(provider);
-      }
+      // Try popup first (works in normal browser and most Android PWAs)
+      await firebase.auth().signInWithPopup(provider);
     } catch (err) {
-      if (err.code !== 'auth/popup-closed-by-user') {
+      if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
+        // Popup blocked or not supported (e.g. iOS standalone mode) — fall back to redirect
+        try {
+          await firebase.auth().signInWithRedirect(provider);
+        } catch (redirectErr) {
+          alert('Sign-in failed: ' + redirectErr.message);
+        }
+      } else if (err.code !== 'auth/popup-closed-by-user') {
         alert('Sign-in failed: ' + err.message);
       }
     }
