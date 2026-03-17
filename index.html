@@ -890,6 +890,101 @@
       .header-actions .btn { padding: 0.35rem 0.5rem; font-size: 0.72rem; }
       .note-card h3 { font-size: 0.9rem; }
     }
+    /* ── Voice Input ── */
+    .voice-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .voice-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .voice-btn.recording {
+      border-color: #ef4444;
+      color: #ef4444;
+      background: rgba(239,68,68,0.1);
+      animation: pulse-ring 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3); }
+      50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    }
+    .voice-btn.unsupported { display: none; }
+
+    .voice-status {
+      font-size: 0.75rem;
+      color: #ef4444;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    .voice-status.active { display: block; }
+
+    /* ── Reminders ── */
+    .reminder-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .reminder-row input[type="datetime-local"] {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .reminder-row input:focus { border-color: var(--accent); }
+    .btn-detect-date {
+      padding: 0.35rem 0.75rem;
+      background: var(--ai-bg);
+      color: var(--ai-accent);
+      border: 1px solid var(--ai-accent);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-detect-date:hover { background: var(--ai-accent); color: #fff; }
+    .btn-detect-date:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .note-card .card-reminder {
+      font-size: 0.72rem;
+      color: #f59e0b;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 0.4rem;
+    }
+    .note-card .card-reminder.overdue { color: #ef4444; }
+
+    .reminder-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(245,158,11,0.15);
+      color: #f59e0b;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .reminder-badge.overdue {
+      background: rgba(239,68,68,0.15);
+      color: #ef4444;
+    }
+
   </style>
 </head>
 <body>
@@ -971,9 +1066,15 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           Brain Dump - just type, AI organises everything
         </h3>
-        <textarea id="quickCaptureInput" placeholder="Dump your thoughts here... ideas, tasks, quotes, anything. AI will figure out the title, category, tags, and summary for you."></textarea>
+        <div style="display:flex;gap:0.5rem;align-items:flex-start;">
+          <textarea id="quickCaptureInput" placeholder="Dump your thoughts here... ideas, tasks, quotes, anything. AI will figure out the title, category, tags, and summary for you." style="flex:1;"></textarea>
+          <button class="voice-btn" id="quickCaptureVoiceBtn" title="Voice input">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+        </div>
+        <div class="voice-status" id="quickCaptureVoiceStatus">Listening...</div>
         <div class="quick-capture-actions">
-          <span class="quick-capture-hint">Just write naturally. AI handles the rest.</span>
+          <span class="quick-capture-hint">Type, paste, or tap the mic. AI handles the rest.</span>
           <button class="btn btn-ai" id="quickCaptureBtn">Capture</button>
         </div>
       </div>
@@ -1009,11 +1110,24 @@
       </div>
       <div class="form-group">
         <label>Content</label>
-        <textarea id="noteContent" placeholder="Write your thoughts..."></textarea>
+        <div style="display:flex;gap:0.5rem;align-items:flex-start;">
+          <textarea id="noteContent" placeholder="Write your thoughts..." style="flex:1;"></textarea>
+          <button class="voice-btn" id="noteContentVoiceBtn" title="Voice input">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+        </div>
+        <div class="voice-status" id="noteContentVoiceStatus">Listening...</div>
       </div>
       <div class="form-group">
         <label>Link (optional)</label>
         <input type="url" id="noteLink" placeholder="https://..." />
+      </div>
+      <div class="form-group">
+        <label>Reminder (optional)</label>
+        <div class="reminder-row">
+          <input type="datetime-local" id="noteReminder" />
+          <button class="btn-detect-date" id="aiDetectDate" title="AI detects dates/deadlines from your content">Auto-detect</button>
+        </div>
       </div>
       <div class="form-group">
         <label>Tags (comma separated)</label>
@@ -1182,6 +1296,37 @@
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  function formatReminderDate(isoStr) {
+    const d = new Date(isoStr);
+    const now = new Date();
+    const diff = d - now;
+    const absDiff = Math.abs(diff);
+    const mins = Math.floor(absDiff / 60000);
+    const hours = Math.floor(mins / 60);
+    const days = Math.floor(hours / 24);
+
+    const timeStr = d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+    if (diff < 0) {
+      if (mins < 60) return `Overdue ${mins}m ago`;
+      if (hours < 24) return `Overdue ${hours}h ago`;
+      return `Overdue - was ${timeStr}`;
+    }
+    if (mins < 60) return `In ${mins}m`;
+    if (hours < 24) return `In ${hours}h`;
+    if (days < 7) return `In ${days}d - ${timeStr}`;
+    return timeStr;
+  }
+
+  function toLocalDatetimeString(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    const h = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${y}-${m}-${d}T${h}:${min}`;
   }
 
   // ── AI API ──
@@ -1392,6 +1537,7 @@
         ${note.pinned ? '<span class="pin-indicator">\u{1F4CC}</span>' : ''}
         <div class="card-category">${CATEGORIES[note.category]?.icon || ''} ${note.category}</div>
         <h3>${escapeHtml(note.title)}</h3>
+        ${note.reminder ? `<div class="card-reminder ${new Date(note.reminder) < new Date() ? 'overdue' : ''}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> ${formatReminderDate(note.reminder)}</div>` : ''}
         ${note.summary ? `<div class="card-ai-summary">${escapeHtml(note.summary)}</div>` : ''}
         <div class="card-preview">${escapeHtml(note.content)}</div>
         <div class="card-footer">
@@ -1448,6 +1594,7 @@
         <span>Created ${formatDate(note.created)}</span>
         <span>Updated ${formatDate(note.updated)}</span>
       </div>
+      ${note.reminder ? `<div class="reminder-badge ${new Date(note.reminder) < new Date() ? 'overdue' : ''}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> ${formatReminderDate(note.reminder)}</div>` : ''}
       ${note.summary ? `<div style="background:var(--ai-bg);border-left:3px solid var(--ai-accent);padding:0.75rem 1rem;border-radius:0 8px 8px 0;margin-bottom:1rem;font-size:0.88rem;color:var(--ai-accent);"><strong>AI Summary:</strong> ${escapeHtml(note.summary)}</div>` : ''}
       <div class="detail-content">${escapeHtml(note.content)}</div>
       ${note.link ? `<a class="detail-link" href="${escapeHtml(note.link)}" target="_blank" rel="noopener">${escapeHtml(note.link)}</a>` : ''}
@@ -1495,6 +1642,7 @@
     document.getElementById('noteContent').value = note ? note.content : '';
     document.getElementById('noteLink').value = note ? (note.link || '') : '';
     document.getElementById('noteTags').value = note ? note.tags.join(', ') : '';
+    document.getElementById('noteReminder').value = note && note.reminder ? toLocalDatetimeString(new Date(note.reminder)) : '';
     document.getElementById('aiTagSuggestions').innerHTML = '';
     document.getElementById('aiCategorySuggestion').textContent = '';
 
@@ -1514,6 +1662,8 @@
     const link = document.getElementById('noteLink').value.trim();
     const tags = document.getElementById('noteTags').value
       .split(',').map(t => t.trim()).filter(Boolean);
+    const reminderVal = document.getElementById('noteReminder').value;
+    const reminder = reminderVal ? new Date(reminderVal).toISOString() : '';
 
     if (!title) {
       document.getElementById('noteTitle').style.borderColor = 'var(--accent)';
@@ -1526,7 +1676,7 @@
     if (id) {
       const note = notes.find(n => n.id === id);
       if (note) {
-        Object.assign(note, { title, category, content, link, tags, updated: now });
+        Object.assign(note, { title, category, content, link, tags, reminder, updated: now });
         savedId = id;
       }
     } else {
@@ -1538,6 +1688,7 @@
         content,
         link,
         tags,
+        reminder,
         summary: '',
         pinned: false,
         created: now,
@@ -1634,12 +1785,14 @@
   async function aiOrganizeNote(content) {
     const existingTags = [...new Set(notes.flatMap(n => n.tags))];
     const cats = Object.keys(CATEGORIES).filter(k => k !== 'all');
+    const today = new Date().toISOString().split('T')[0];
 
-    const prompt = `Analyse the following raw thought/note and return a JSON object with these fields:
+    const prompt = `Today is ${today}. Analyse the following raw thought/note and return a JSON object with these fields:
 - "title": a short, clear title (max 8 words)
 - "category": pick ONE from [${cats.join(', ')}]
 - "tags": array of 2-5 short lowercase tags (prefer reusing these existing tags when relevant: ${existingTags.join(', ') || 'none yet'})
 - "summary": a 1-2 sentence summary of the key point
+- "reminder": if the text mentions a date, deadline, appointment, or time-sensitive task, return an ISO 8601 datetime string. For unspecified times use 09:00. For relative dates like "tomorrow" calculate from today. If no date reference, return null.
 
 Return ONLY valid JSON, no markdown, no explanation.
 
@@ -1648,10 +1801,9 @@ ${content}`;
 
     const result = await callClaude(
       [{ role: 'user', content: prompt }],
-      'You organise personal notes. Return only valid JSON with title, category, tags, summary fields. Be concise.'
+      'You organise personal notes. Return only valid JSON with title, category, tags, summary, reminder fields. Be concise.'
     );
 
-    // Strip any markdown code fences
     const cleaned = result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     return JSON.parse(cleaned);
   }
@@ -1694,6 +1846,7 @@ ${content}`;
       const organised = await aiOrganizeNote(rawContent);
 
       const now = Date.now();
+      const reminder = organised.reminder ? new Date(organised.reminder).toISOString() : '';
       notes.push({
         id: generateId(),
         title: organised.title || rawContent.split('\n')[0].slice(0, 50),
@@ -1701,6 +1854,7 @@ ${content}`;
         content: rawContent,
         link: '',
         tags: Array.isArray(organised.tags) ? organised.tags : [],
+        reminder,
         summary: organised.summary || '',
         pinned: false,
         created: now,
@@ -1709,6 +1863,10 @@ ${content}`;
 
       save();
       input.value = '';
+      if (reminder) {
+        await requestNotificationPermission();
+        scheduleReminders();
+      }
       render();
     } catch (err) {
       alert('AI organise failed: ' + err.message + '\n\nSaving as a plain note instead.');
@@ -1866,6 +2024,194 @@ ${content}`;
     updateAiStatus();
   }
 
+  // ── Voice Input ──
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let activeRecognition = null;
+
+  function setupVoiceButton(btnId, targetId, statusId) {
+    const btn = document.getElementById(btnId);
+    if (!SpeechRecognition) {
+      btn.classList.add('unsupported');
+      return;
+    }
+
+    btn.addEventListener('click', () => {
+      if (activeRecognition) {
+        activeRecognition.stop();
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = navigator.language || 'en-US';
+
+      const target = document.getElementById(targetId);
+      const status = document.getElementById(statusId);
+      const startPos = target.value.length;
+
+      recognition.onstart = () => {
+        btn.classList.add('recording');
+        status.classList.add('active');
+        status.textContent = 'Listening... speak now';
+        activeRecognition = recognition;
+      };
+
+      recognition.onresult = (event) => {
+        let interim = '';
+        let final = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            final += transcript;
+          } else {
+            interim = transcript;
+          }
+        }
+        if (final) {
+          const before = target.value.slice(0, startPos);
+          const sep = before && !before.endsWith(' ') && !before.endsWith('\n') ? ' ' : '';
+          target.value = before + sep + final;
+        }
+        status.textContent = interim ? `"${interim}"` : 'Listening...';
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === 'not-allowed') {
+          status.textContent = 'Mic access denied. Check browser permissions.';
+        } else {
+          status.textContent = `Error: ${event.error}`;
+        }
+        setTimeout(() => {
+          status.classList.remove('active');
+        }, 3000);
+      };
+
+      recognition.onend = () => {
+        btn.classList.remove('recording');
+        status.classList.remove('active');
+        activeRecognition = null;
+      };
+
+      recognition.start();
+    });
+  }
+
+  setupVoiceButton('quickCaptureVoiceBtn', 'quickCaptureInput', 'quickCaptureVoiceStatus');
+  setupVoiceButton('noteContentVoiceBtn', 'noteContent', 'noteContentVoiceStatus');
+
+  // ── Reminders System ──
+  const REMINDERS_KEY = 'secondbrain_reminder_timers';
+
+  async function requestNotificationPermission() {
+    if (!('Notification' in window)) return false;
+    if (Notification.permission === 'granted') return true;
+    if (Notification.permission === 'denied') return false;
+    const result = await Notification.requestPermission();
+    return result === 'granted';
+  }
+
+  function showReminderNotification(note) {
+    if (Notification.permission !== 'granted') return;
+    const n = new Notification(`SecondBrain Reminder`, {
+      body: `${CATEGORIES[note.category]?.icon || ''} ${note.title}\n${note.summary || note.content.slice(0, 100)}`,
+      icon: 'favicon.ico',
+      tag: note.id,
+      requireInteraction: true,
+    });
+    n.onclick = () => {
+      window.focus();
+      openDetail(note.id);
+      n.close();
+    };
+  }
+
+  function scheduleReminders() {
+    // Clear any existing timers
+    if (window._reminderTimers) {
+      window._reminderTimers.forEach(t => clearTimeout(t));
+    }
+    window._reminderTimers = [];
+
+    const now = Date.now();
+    notes.forEach(note => {
+      if (!note.reminder) return;
+      const reminderTime = new Date(note.reminder).getTime();
+      const delay = reminderTime - now;
+
+      if (delay > 0 && delay < 86400000) { // Within 24 hours
+        const timer = setTimeout(() => {
+          showReminderNotification(note);
+          render(); // Re-render to show overdue status
+        }, delay);
+        window._reminderTimers.push(timer);
+      } else if (delay <= 0 && delay > -300000) { // Overdue by less than 5 min (just missed)
+        showReminderNotification(note);
+      }
+    });
+  }
+
+  // AI date detection
+  async function aiDetectDate() {
+    const btn = document.getElementById('aiDetectDate');
+    const title = document.getElementById('noteTitle').value.trim();
+    const content = document.getElementById('noteContent').value.trim();
+
+    if (!title && !content) { alert('Add content first.'); return; }
+    if (!hasAiKey()) { alert('Configure your API key first.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Detecting...';
+
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const result = await callClaude([
+        { role: 'user', content: `Today is ${today}. Analyse this note and extract any dates, deadlines, or time references. Return ONLY a JSON object with a single field "datetime" in ISO 8601 format (YYYY-MM-DDTHH:MM:SS). If you find a relative reference like "tomorrow" or "next week", calculate the actual date. If no date/time is found, return {"datetime": null}.\n\nTitle: ${title}\nContent: ${content}` }
+      ], 'You extract dates and deadlines from text. Return only valid JSON with a datetime field. For times not specified, default to 09:00.');
+
+      const cleaned = result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+
+      if (parsed.datetime) {
+        const dt = new Date(parsed.datetime);
+        document.getElementById('noteReminder').value = toLocalDatetimeString(dt);
+      } else {
+        alert('No date or deadline detected in this note.');
+      }
+    } catch (err) {
+      alert('Could not detect date: ' + err.message);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Auto-detect';
+  }
+
+  // Also auto-detect reminders in quick capture
+  async function autoDetectReminder(noteId, content) {
+    if (!hasAiKey()) return;
+    const note = notes.find(n => n.id === noteId);
+    if (!note || note.reminder) return;
+
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const result = await callClaude([
+        { role: 'user', content: `Today is ${today}. Does this text contain any dates, deadlines, appointments, or time-sensitive tasks? Return ONLY a JSON object: {"datetime": "ISO8601 string"} or {"datetime": null} if none found.\n\n${content}` }
+      ], 'Extract dates/deadlines from text. Return only JSON. For unspecified times, use 09:00. Be conservative - only extract clear date references.');
+
+      const cleaned = result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+
+      if (parsed.datetime) {
+        note.reminder = new Date(parsed.datetime).toISOString();
+        save();
+        scheduleReminders();
+        render();
+      }
+    } catch (e) {
+      // Silently fail
+    }
+  }
+
   // ── Event Listeners ──
   document.getElementById('addNoteBtn').addEventListener('click', () => openEditor());
   document.getElementById('quickCaptureBtn').addEventListener('click', quickCapture);
@@ -1917,6 +2263,7 @@ ${content}`;
 
   // AI Suggestions
   document.getElementById('aiSuggestTags').addEventListener('click', aiSuggestTags);
+  document.getElementById('aiDetectDate').addEventListener('click', aiDetectDate);
   document.getElementById('aiSuggestCategory').addEventListener('click', aiSuggestCategory);
 
   // Settings
@@ -1968,6 +2315,19 @@ ${content}`;
 
   // ── Init ──
   render();
+  scheduleReminders();
+
+  // Request notification permission if there are notes with reminders
+  if (notes.some(n => n.reminder)) {
+    requestNotificationPermission();
+  }
+
+  // Re-check reminders every minute
+  setInterval(() => {
+    scheduleReminders();
+    // Re-render to update "in X minutes" displays
+    if (notes.some(n => n.reminder)) render();
+  }, 60000);
 </script>
 </body>
 </html>
