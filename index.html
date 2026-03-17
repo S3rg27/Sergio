@@ -1071,6 +1071,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 </head>
 <body>
 
@@ -1421,6 +1422,10 @@
         if (user) {
           startFirestoreSync();
           fetchSharedApiKey();
+          // Subscribe to push notifications once user is authenticated
+          if (Notification.permission === 'granted') {
+            subscribeToPush();
+          }
         } else {
           stopFirestoreSync();
           sharedApiKey = null;
@@ -2534,6 +2539,71 @@ ${content}`;
   setupVoiceButton('quickCaptureVoiceBtn', 'quickCaptureInput', 'quickCaptureVoiceStatus');
   setupVoiceButton('noteContentVoiceBtn', 'noteContent', 'noteContentVoiceStatus');
 
+  // ── Service Worker + Push Notifications ──
+  let swRegistration = null;
+
+  async function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) return null;
+    try {
+      const reg = await navigator.serviceWorker.register('/Sergio/sw.js');
+      swRegistration = reg;
+      console.log('Service Worker registered');
+
+      // Listen for messages from the service worker (e.g. OPEN_NOTE)
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data?.type === 'OPEN_NOTE') {
+          openDetail(event.data.noteId);
+        }
+      });
+
+      // Check URL hash for note deep link (from notification click)
+      if (location.hash.startsWith('#note-')) {
+        const noteId = location.hash.replace('#note-', '');
+        setTimeout(() => openDetail(noteId), 500);
+      }
+
+      return reg;
+    } catch (err) {
+      console.error('SW registration failed:', err);
+      return null;
+    }
+  }
+
+  // ── Push Subscription (VAPID / FCM) ──
+  async function subscribeToPush() {
+    if (!swRegistration) return null;
+    if (!firebaseReady || !currentUser) return null;
+
+    try {
+      const messaging = firebase.messaging();
+      // Use the service worker we already registered
+      const token = await messaging.getToken({
+        serviceWorkerRegistration: swRegistration,
+      });
+
+      if (token) {
+        // Store the push token in Firestore for this user
+        await firebase.firestore()
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('pushTokens')
+          .doc('web')
+          .set({
+            token,
+            platform: 'web',
+            userAgent: navigator.userAgent,
+            updated: new Date().toISOString(),
+          });
+        console.log('Push subscription saved');
+        return token;
+      }
+    } catch (err) {
+      console.warn('Push subscription failed:', err);
+      // Fallback: still works with local SW notifications
+    }
+    return null;
+  }
+
   // ── Reminders System ──
   const REMINDERS_KEY = 'secondbrain_reminder_timers';
 
@@ -2542,22 +2612,43 @@ ${content}`;
     if (Notification.permission === 'granted') return true;
     if (Notification.permission === 'denied') return false;
     const result = await Notification.requestPermission();
+    if (result === 'granted') {
+      // Once permission is granted, try to subscribe to push
+      subscribeToPush();
+    }
     return result === 'granted';
   }
 
   function showReminderNotification(note) {
     if (Notification.permission !== 'granted') return;
-    const n = new Notification(`SecondBrain Reminder`, {
-      body: `${CATEGORIES[note.category]?.icon || ''} ${note.title}\n${note.summary || note.content.slice(0, 100)}`,
-      icon: 'favicon.ico',
-      tag: note.id,
-      requireInteraction: true,
-    });
-    n.onclick = () => {
-      window.focus();
-      openDetail(note.id);
-      n.close();
-    };
+
+    const body = `${CATEGORIES[note.category]?.icon || ''} ${note.title}\n${note.summary || note.content.slice(0, 100)}`;
+
+    // Use the service worker to show notifications (works in background on iOS PWA)
+    if (swRegistration) {
+      swRegistration.showNotification('SecondBrain Reminder', {
+        body,
+        icon: '/Sergio/favicon.ico',
+        badge: '/Sergio/favicon.ico',
+        tag: note.id,
+        requireInteraction: true,
+        vibrate: [200, 100, 200],
+        data: { noteId: note.id, url: '/Sergio/' },
+        actions: [
+          { action: 'open', title: 'Open Note' },
+          { action: 'dismiss', title: 'Dismiss' },
+        ],
+      });
+    } else {
+      // Fallback to basic Notification API
+      const n = new Notification('SecondBrain Reminder', {
+        body,
+        icon: 'favicon.ico',
+        tag: note.id,
+        requireInteraction: true,
+      });
+      n.onclick = () => { window.focus(); openDetail(note.id); n.close(); };
+    }
   }
 
   function scheduleReminders() {
@@ -2568,21 +2659,68 @@ ${content}`;
     window._reminderTimers = [];
 
     const now = Date.now();
+    const swReminders = [];
+
     notes.forEach(note => {
       if (!note.reminder) return;
       const reminderTime = new Date(note.reminder).getTime();
       const delay = reminderTime - now;
 
       if (delay > 0 && delay < 86400000) { // Within 24 hours
+        // Local timer as backup
         const timer = setTimeout(() => {
           showReminderNotification(note);
-          render(); // Re-render to show overdue status
+          render();
         }, delay);
         window._reminderTimers.push(timer);
-      } else if (delay <= 0 && delay > -300000) { // Overdue by less than 5 min (just missed)
+
+        // Collect for service worker scheduling (works in background)
+        swReminders.push({
+          noteId: note.id,
+          title: note.title,
+          body: `${CATEGORIES[note.category]?.icon || ''} ${note.summary || note.content.slice(0, 100)}`,
+          triggerTime: reminderTime,
+        });
+      } else if (delay <= 0 && delay > -300000) { // Overdue by less than 5 min
         showReminderNotification(note);
       }
     });
+
+    // Send all reminders to the service worker for background delivery
+    if (swRegistration?.active && swReminders.length > 0) {
+      swRegistration.active.postMessage({
+        type: 'SCHEDULE_ALL_REMINDERS',
+        reminders: swReminders,
+      });
+    }
+
+    // Also sync reminder schedule to Firestore for server-side push delivery
+    syncRemindersToFirestore();
+  }
+
+  // Store upcoming reminders in Firestore so a Cloud Function can send pushes
+  async function syncRemindersToFirestore() {
+    if (!firebaseReady || !currentUser) return;
+    try {
+      const upcoming = notes
+        .filter(n => n.reminder && new Date(n.reminder).getTime() > Date.now())
+        .map(n => ({
+          noteId: n.id,
+          title: n.title,
+          body: `${CATEGORIES[n.category]?.icon || ''} ${n.summary || n.content.slice(0, 100)}`,
+          triggerTime: new Date(n.reminder).toISOString(),
+          sent: false,
+        }));
+
+      await firebase.firestore()
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('reminders')
+        .doc('scheduled')
+        .set({ upcoming, updated: new Date().toISOString() }, { merge: true });
+    } catch (e) {
+      // Non-critical — local reminders still work
+    }
   }
 
   // AI date detection
@@ -2753,12 +2891,16 @@ ${content}`;
   // ── Init ──
   initFirebase();
   render();
-  scheduleReminders();
 
-  // Request notification permission if there are notes with reminders
-  if (notes.some(n => n.reminder)) {
-    requestNotificationPermission();
-  }
+  // Register service worker first, then set up reminders
+  registerServiceWorker().then(() => {
+    scheduleReminders();
+
+    // Request notification permission if there are notes with reminders
+    if (notes.some(n => n.reminder)) {
+      requestNotificationPermission();
+    }
+  });
 
   // Re-check reminders every minute
   setInterval(() => {
