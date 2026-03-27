@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart | Sergio's Liquor Warehouse</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico">
+</head>
+<body>
+
+  <!-- Age Verification Modal -->
+  <div class="age-modal" id="ageModal">
+    <div class="age-modal-content">
+      <div style="font-size:3rem;margin-bottom:16px;">&#127866;</div>
+      <h2>Age Verification Required</h2>
+      <p>You must be 21 years or older to enter this site. Please verify your age.</p>
+      <div class="age-buttons">
+        <button class="btn btn-primary" id="ageYes">I am 21+</button>
+        <button class="btn btn-outline" id="ageNo">I am under 21</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Utility Bar -->
+  <div class="utility-bar">
+    <div class="container">
+      <div class="utility-left">
+        <span>&#127482;&#127480; US</span>
+        <a href="#">Store Locations</a>
+        <a href="#">Customer Service</a>
+      </div>
+      <div class="utility-right">
+        <a href="#">Order Status</a>
+        <a href="account.html">Sign In / Register</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header" id="mainHeader">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">SL</div>
+          <div class="logo-text">
+            <h1>Sergio's Liquor</h1>
+            <span>Warehouse</span>
+          </div>
+        </a>
+        <div class="search-bar">
+          <input type="text" placeholder="Search wines, spirits, beer...">
+          <button>&#128269;</button>
+        </div>
+        <div class="header-actions">
+          <a href="account.html">
+            <span class="icon">&#128100;</span>
+            <span class="label-text">Account</span>
+          </a>
+          <a href="cart.html" class="cart-link">
+            <span class="icon">&#128722;</span>
+            <span class="label-text">Cart</span>
+            <span class="cart-count" id="cartCount">3</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container">
+      <button class="hamburger" id="hamburger">&#9776; Menu</button>
+      <ul id="navMenu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop All</a></li>
+        <li><a href="shop.html#wine">Wine</a></li>
+        <li><a href="shop.html#spirits">Spirits</a></li>
+        <li><a href="shop.html#beer">Beer</a></li>
+        <li><a href="shop.html#mixers">Mixers &amp; More</a></li>
+        <li><a href="deals.html">Deals</a></li>
+        <li><a href="membership.html">Membership</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Breadcrumbs -->
+  <div class="container">
+    <div class="breadcrumbs">
+      <a href="index.html">Home</a> <span>&rsaquo;</span> Shopping Cart
+    </div>
+  </div>
+
+  <!-- Cart Content -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title" style="text-align:left;">Shopping Cart <span style="font-size:1rem;color:#666;font-weight:400;">(3 items)</span></h2>
+
+      <!-- Age Notice -->
+      <div class="age-warning" style="border-radius:8px;margin-bottom:24px;">
+        &#9888; Age verification required at delivery. Valid government-issued ID proving you are 21+ must be presented.
+      </div>
+
+      <div class="cart-layout">
+        <!-- Cart Items -->
+        <div class="cart-items">
+          <table class="cart-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Item 1 -->
+              <tr class="cart-row" data-price="34.99">
+                <td>
+                  <div class="cart-item-info">
+                    <div class="cart-item-image" style="background:linear-gradient(135deg,#8B4513,#654321);">&#129347;</div>
+                    <div>
+                      <div class="cart-item-name">Hennessy VS Cognac</div>
+                      <div class="cart-item-size">750ml</div>
+                    </div>
+                  </div>
+                </td>
+                <td>$34.99</td>
+                <td>
+                  <div class="qty-control">
+                    <button class="qty-minus">-</button>
+                    <input type="number" value="1" min="1" max="99" class="qty-input">
+                    <button class="qty-plus">+</button>
+                  </div>
+                </td>
+                <td class="line-total">$34.99</td>
+                <td><button class="remove-btn">&#10005; Remove</button></td>
+              </tr>
+
+              <!-- Item 2 -->
+              <tr class="cart-row" data-price="79.99">
+                <td>
+                  <div class="cart-item-info">
+                    <div class="cart-item-image" style="background:linear-gradient(135deg,#722f37,#4a1a2e);">&#127863;</div>
+                    <div>
+                      <div class="cart-item-name">Caymus Cabernet Sauvignon 2021</div>
+                      <div class="cart-item-size">750ml</div>
+                    </div>
+                  </div>
+                </td>
+                <td>$79.99</td>
+                <td>
+                  <div class="qty-control">
+                    <button class="qty-minus">-</button>
+                    <input type="number" value="1" min="1" max="99" class="qty-input">
+                    <button class="qty-plus">+</button>
+                  </div>
+                </td>
+                <td class="line-total">$79.99</td>
+                <td><button class="remove-btn">&#10005; Remove</button></td>
+              </tr>
+
+              <!-- Item 3 -->
+              <tr class="cart-row" data-price="149.99">
+                <td>
+                  <div class="cart-item-info">
+                    <div class="cart-item-image" style="background:linear-gradient(135deg,#DAA520,#B8860B);">&#127858;</div>
+                    <div>
+                      <div class="cart-item-name">Clase Azul Reposado Tequila</div>
+                      <div class="cart-item-size">750ml</div>
+                    </div>
+                  </div>
+                </td>
+                <td>$149.99</td>
+                <td>
+                  <div class="qty-control">
+                    <button class="qty-minus">-</button>
+                    <input type="number" value="1" min="1" max="99" class="qty-input">
+                    <button class="qty-plus">+</button>
+                  </div>
+                </td>
+                <td class="line-total">$149.99</td>
+                <td><button class="remove-btn">&#10005; Remove</button></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top:20px;">
+            <a href="shop.html" class="btn btn-outline">&larr; Continue Shopping</a>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="cart-summary">
+          <h3>Order Summary</h3>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="subtotal">$264.97</span>
+          </div>
+          <div class="summary-row savings">
+            <span>Member Savings (5%)</span>
+            <span id="memberSavings">-$13.25</span>
+          </div>
+          <div class="summary-row">
+            <span>Estimated Tax (8.25%)</span>
+            <span id="tax">$20.77</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span id="shipping" style="color:#27ae60;font-weight:600;">FREE</span>
+          </div>
+          <div class="summary-row" id="promoRow" style="display:none;">
+            <span>Promo Discount</span>
+            <span id="promoDiscount" style="color:#27ae60;">-$0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>Order Total</span>
+            <span id="orderTotal">$272.49</span>
+          </div>
+
+          <div class="promo-input">
+            <input type="text" placeholder="Promo code" id="promoCode">
+            <button id="applyPromo">Apply</button>
+          </div>
+          <div id="promoMsg" style="font-size:0.8rem;margin-bottom:12px;"></div>
+
+          <button class="btn btn-primary btn-block" style="margin-top:8px;">Proceed to Checkout</button>
+
+          <div style="margin-top:16px;text-align:center;font-size:0.8rem;color:#666;">
+            <p>&#128274; Secure checkout</p>
+            <p style="margin-top:4px;">We accept: Visa, Mastercard, Amex, Discover</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="recommendations">
+        <h2 class="section-title">You Might Also Like</h2>
+        <div class="product-grid">
+          <div class="product-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#D2691E,#8B4513);">&#129347;</div>
+            <div class="product-info">
+              <div class="product-brand">Woodford Reserve</div>
+              <div class="product-name">Kentucky Straight Bourbon</div>
+              <div class="product-size">750ml</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <div class="product-price">$36.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#F5F5DC,#FFFDD0);">&#127863;</div>
+            <div class="product-info">
+              <div class="product-brand">Veuve Clicquot</div>
+              <div class="product-name">Yellow Label Brut Champagne</div>
+              <div class="product-size">750ml</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <div class="product-price">$54.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#2E8B57,#006400);">&#127864;</div>
+            <div class="product-info">
+              <div class="product-brand">Bombay Sapphire</div>
+              <div class="product-name">London Dry Gin</div>
+              <div class="product-size">1L</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+              <div class="product-price">$28.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#E8D5B7,#C2A66B);">&#129347;</div>
+            <div class="product-info">
+              <div class="product-brand">Casamigos</div>
+              <div class="product-name">Blanco Tequila</div>
+              <div class="product-size">750ml</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <div class="product-price">$47.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <a href="shop.html">All Products</a>
+          <a href="shop.html#wine">Wine</a>
+          <a href="shop.html#spirits">Spirits</a>
+          <a href="shop.html#beer">Beer</a>
+          <a href="deals.html">Weekly Deals</a>
+        </div>
+        <div class="footer-col">
+          <h4>Customer Service</h4>
+          <a href="#">Contact Us</a>
+          <a href="#">Shipping Info</a>
+          <a href="#">Returns &amp; Refunds</a>
+          <a href="#">FAQ</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="#">About Us</a>
+          <a href="#">Store Locations</a>
+          <a href="#">Careers</a>
+          <a href="membership.html">Membership</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Accessibility</a>
+          <a href="#">Responsible Drinking</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Sergio's Liquor Warehouse. All rights reserved.</p>
+        <p class="age-notice">You must be 21 years of age or older to purchase alcohol.</p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="backToTop">&#8593;</button>
+  <script src="script.js"></script>
+</body>
+</html>

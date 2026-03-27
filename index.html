@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sergio's Liquor Warehouse - Premium Spirits at Warehouse Prices</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico">
+</head>
+<body>
+
+  <!-- Top Utility Bar -->
+  <div class="utility-bar">
+    <div class="container utility-bar-inner">
+      <div class="utility-left">
+        <a href="#">Customer Service</a>
+        <span class="utility-divider">|</span>
+        <a href="#">
+          <span class="flag-icon" aria-label="US Flag">&#127482;&#127480;</span> US
+        </a>
+        <span class="utility-divider">|</span>
+        <a href="#">Find a Warehouse</a>
+      </div>
+      <div class="utility-right">
+        <a href="#">Orders &amp; Returns</a>
+        <span class="utility-divider">|</span>
+        <a href="account.html">Sign In / Register</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark">SLW</div>
+        <div class="logo-text">
+          <span class="logo-name">Sergio's</span>
+          <span class="logo-sub">Liquor Warehouse</span>
+        </div>
+      </a>
+      <form class="search-bar" action="shop.html" method="get">
+        <input type="search" name="q" placeholder="Search for wine, spirits, beer and more..." aria-label="Search products">
+        <button type="submit" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </form>
+      <div class="header-actions">
+        <a href="account.html" class="header-action-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Sign In</span>
+        </a>
+        <a href="cart.html" class="header-action-link cart-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="cart-count">0</span>
+          <span>Cart</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="main-nav" aria-label="Main navigation">
+    <div class="container">
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="hamburger"></span>
+      </button>
+      <ul class="nav-list">
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="shop.html?cat=grocery">Grocery</a></li>
+        <li><a href="shop.html?cat=wine">Wine</a></li>
+        <li><a href="shop.html?cat=beer">Beer</a></li>
+        <li><a href="shop.html?cat=spirits">Spirits</a></li>
+        <li><a href="shop.html?cat=mixers">Mixers &amp; More</a></li>
+        <li><a href="deals.html" class="nav-highlight">Deals</a></li>
+        <li><a href="shop.html?cat=business">Business Delivery</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Hero Carousel -->
+    <section class="hero-carousel" aria-label="Promotional banners">
+      <div class="carousel-track">
+        <div class="carousel-slide active" style="background: linear-gradient(135deg, #003B64 0%, #00628f 100%);">
+          <div class="slide-content">
+            <span class="slide-tag">Member Exclusive</span>
+            <h2>Spring Wine Sale</h2>
+            <p>Save up to 30% on select wines from Napa, Sonoma &amp; Bordeaux</p>
+            <a href="deals.html" class="btn btn-accent">Shop the Sale</a>
+          </div>
+        </div>
+        <div class="carousel-slide" style="background: linear-gradient(135deg, #7b1a2c 0%, #E31837 100%);">
+          <div class="slide-content">
+            <span class="slide-tag">Limited Time</span>
+            <h2>Premium Whiskey Collection</h2>
+            <p>Rare single malts and small-batch bourbons at warehouse prices</p>
+            <a href="shop.html?cat=spirits" class="btn btn-white">Explore Now</a>
+          </div>
+        </div>
+        <div class="carousel-slide" style="background: linear-gradient(135deg, #1a472a 0%, #2d8f4e 100%);">
+          <div class="slide-content">
+            <span class="slide-tag">New Arrivals</span>
+            <h2>Craft Beer Fest</h2>
+            <p>Over 200 new craft beers from local and international breweries</p>
+            <a href="shop.html?cat=beer" class="btn btn-accent">Browse Selection</a>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-btn carousel-prev" aria-label="Previous slide">&#10094;</button>
+      <button class="carousel-btn carousel-next" aria-label="Next slide">&#10095;</button>
+      <div class="carousel-dots">
+        <button class="dot active" aria-label="Go to slide 1"></button>
+        <button class="dot" aria-label="Go to slide 2"></button>
+        <button class="dot" aria-label="Go to slide 3"></button>
+      </div>
+    </section>
+
+    <!-- Category Tiles -->
+    <section class="categories-section">
+      <div class="container">
+        <h2 class="section-heading">Shop by Category</h2>
+        <div class="category-grid">
+          <a href="shop.html?cat=wine" class="category-tile">
+            <div class="category-img" style="background: linear-gradient(135deg, #722f37, #a94064);">
+              <span class="category-icon">&#127863;</span>
+            </div>
+            <span class="category-label">Wine</span>
+          </a>
+          <a href="shop.html?cat=beer" class="category-tile">
+            <div class="category-img" style="background: linear-gradient(135deg, #c8860a, #e6a800);">
+              <span class="category-icon">&#127866;</span>
+            </div>
+            <span class="category-label">Beer</span>
+          </a>
+          <a href="shop.html?cat=whiskey" class="category-tile">
+            <div class="category-img" style="background: linear-gradient(135deg, #8b4513, #c47022);">
+              <span class="category-icon">&#129347;</span>
+            </div>
+            <span class="category-label">Whiskey</span>
+          </a>
+          <a href="shop.html?cat=vodka" class="category-tile">
+            <div class="category-img" style="background: linear-gradient(135deg, #5b7fa5, #89b4d6);">
+              <span class="category-icon">&#127862;</span>
+            </div>
+            <span class="category-label">Vodka</span>
+          </a>
+          <a href="shop.html?cat=tequila" class="category-tile">
+            <div class="category-img" style="background: linear-gradient(135deg, #2e7d32, #66bb6a);">
+              <span class="category-icon">&#127816;</span>
+            </div>
+            <span class="category-label">Tequila</span>
+          </a>
+          <a href="shop.html?cat=rum" class="category-tile">
+            <div class="category-img" style="background: linear-gradient(135deg, #5d4037, #8d6e63);">
+              <span class="category-icon">&#127860;</span>
+            </div>
+            <span class="category-label">Rum</span>
+          </a>
+          <a href="shop.html?cat=gin" class="category-tile">
+            <div class="category-img" style="background: linear-gradient(135deg, #00695c, #4db6ac);">
+              <span class="category-icon">&#127811;</span>
+            </div>
+            <span class="category-label">Gin</span>
+          </a>
+          <a href="shop.html?cat=mixers" class="category-tile">
+            <div class="category-img" style="background: linear-gradient(135deg, #e65100, #ff9800);">
+              <span class="category-icon">&#127849;</span>
+            </div>
+            <span class="category-label">Mixers &amp; More</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-heading">Featured Products</h2>
+          <a href="shop.html" class="see-all-link">See All &rarr;</a>
+        </div>
+        <div class="product-scroll">
+          <div class="product-card">
+            <div class="product-img" style="background: linear-gradient(160deg, #722f37, #3d1a20);">
+              <span class="product-badge">Best Seller</span>
+              <div class="product-img-label">Cabernet<br>Sauvignon</div>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Sergio's Reserve Cabernet Sauvignon 2021</h3>
+              <div class="product-rating">
+                <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+                <span class="review-count">(142)</span>
+              </div>
+              <div class="product-price">
+                <span class="price-current">$18.99</span>
+                <span class="price-original">$24.99</span>
+              </div>
+              <button class="btn btn-add-cart">Add to Cart</button>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-img" style="background: linear-gradient(160deg, #c8860a, #6b4800);">
+              <div class="product-img-label">Single Malt<br>Scotch</div>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Highland Glen 18 Year Single Malt Scotch</h3>
+              <div class="product-rating">
+                <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                <span class="review-count">(89)</span>
+              </div>
+              <div class="product-price">
+                <span class="price-current">$64.99</span>
+              </div>
+              <button class="btn btn-add-cart">Add to Cart</button>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-img" style="background: linear-gradient(160deg, #e6a800, #8c6900);">
+              <span class="product-badge new">New</span>
+              <div class="product-img-label">Craft<br>IPA</div>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">West Coast Haze IPA 12-Pack</h3>
+              <div class="product-rating">
+                <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+                <span class="review-count">(56)</span>
+              </div>
+              <div class="product-price">
+                <span class="price-current">$16.49</span>
+              </div>
+              <button class="btn btn-add-cart">Add to Cart</button>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-img" style="background: linear-gradient(160deg, #5b7fa5, #2c4055);">
+              <span class="product-badge">Top Rated</span>
+              <div class="product-img-label">Premium<br>Vodka</div>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Crystal Peak Premium Vodka 1.75L</h3>
+              <div class="product-rating">
+                <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                <span class="review-count">(203)</span>
+              </div>
+              <div class="product-price">
+                <span class="price-current">$22.99</span>
+                <span class="price-original">$29.99</span>
+              </div>
+              <button class="btn btn-add-cart">Add to Cart</button>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-img" style="background: linear-gradient(160deg, #2e7d32, #1a472a);">
+              <div class="product-img-label">Reposado<br>Tequila</div>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Agave Sol Reposado Tequila 750ml</h3>
+              <div class="product-rating">
+                <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+                <span class="review-count">(71)</span>
+              </div>
+              <div class="product-price">
+                <span class="price-current">$34.99</span>
+              </div>
+              <button class="btn btn-add-cart">Add to Cart</button>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-img" style="background: linear-gradient(160deg, #5d4037, #3e2723);">
+              <span class="product-badge">Staff Pick</span>
+              <div class="product-img-label">Spiced<br>Rum</div>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Caribbean Gold Spiced Rum 1L</h3>
+              <div class="product-rating">
+                <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+                <span class="review-count">(118)</span>
+              </div>
+              <div class="product-price">
+                <span class="price-current">$19.99</span>
+                <span class="price-original">$25.99</span>
+              </div>
+              <button class="btn btn-add-cart">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Treasure Hunt Deals -->
+    <section class="treasure-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-heading">Treasure Hunt Deals</h2>
+          <span class="treasure-subtitle">Limited quantities. Once they're gone, they're gone!</span>
+        </div>
+        <div class="treasure-grid">
+          <div class="treasure-card">
+            <div class="treasure-img" style="background: linear-gradient(135deg, #4a0e0e, #8b1a1a);">
+              <span class="treasure-timer">Ends in 2d 14h</span>
+              <div class="product-img-label">Reserve<br>Pinot Noir</div>
+            </div>
+            <div class="treasure-info">
+              <h3>Willamette Valley Reserve Pinot Noir 2019</h3>
+              <div class="treasure-pricing">
+                <span class="treasure-price">$29.99</span>
+                <span class="treasure-was">Was $49.99</span>
+                <span class="treasure-save">Save $20</span>
+              </div>
+              <div class="treasure-stock">
+                <div class="stock-bar"><div class="stock-fill" style="width: 35%;"></div></div>
+                <span class="stock-text">Limited Stock</span>
+              </div>
+              <button class="btn btn-accent btn-full">Add to Cart</button>
+            </div>
+          </div>
+          <div class="treasure-card">
+            <div class="treasure-img" style="background: linear-gradient(135deg, #3e2723, #795548);">
+              <span class="treasure-timer">Ends in 1d 6h</span>
+              <div class="product-img-label">Small Batch<br>Bourbon</div>
+            </div>
+            <div class="treasure-info">
+              <h3>Kentucky Heritage Small Batch Bourbon</h3>
+              <div class="treasure-pricing">
+                <span class="treasure-price">$39.99</span>
+                <span class="treasure-was">Was $59.99</span>
+                <span class="treasure-save">Save $20</span>
+              </div>
+              <div class="treasure-stock">
+                <div class="stock-bar"><div class="stock-fill" style="width: 18%;"></div></div>
+                <span class="stock-text">Almost Gone!</span>
+              </div>
+              <button class="btn btn-accent btn-full">Add to Cart</button>
+            </div>
+          </div>
+          <div class="treasure-card">
+            <div class="treasure-img" style="background: linear-gradient(135deg, #1b5e20, #4caf50);">
+              <span class="treasure-timer">Ends in 3d 22h</span>
+              <div class="product-img-label">Champagne<br>Brut</div>
+            </div>
+            <div class="treasure-info">
+              <h3>Maison Laurent Champagne Brut NV</h3>
+              <div class="treasure-pricing">
+                <span class="treasure-price">$24.99</span>
+                <span class="treasure-was">Was $39.99</span>
+                <span class="treasure-save">Save $15</span>
+              </div>
+              <div class="treasure-stock">
+                <div class="stock-bar"><div class="stock-fill" style="width: 55%;"></div></div>
+                <span class="stock-text">Selling Fast</span>
+              </div>
+              <button class="btn btn-accent btn-full">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Member Benefits Banner -->
+    <section class="member-banner">
+      <div class="container member-banner-inner">
+        <div class="member-text">
+          <h2>Become a Sergio's Warehouse Member</h2>
+          <p>Unlock exclusive pricing, members-only deals, free delivery on orders over $150, and early access to rare finds and limited releases.</p>
+          <div class="member-perks">
+            <span class="perk">&#10003; Exclusive Pricing</span>
+            <span class="perk">&#10003; Free Delivery $150+</span>
+            <span class="perk">&#10003; Early Access</span>
+            <span class="perk">&#10003; 2% Annual Reward</span>
+          </div>
+          <a href="membership.html" class="btn btn-white">Join Today &mdash; $60/year</a>
+        </div>
+        <div class="member-visual">
+          <div class="member-card-graphic">
+            <div class="member-card-top">Sergio's Liquor Warehouse</div>
+            <div class="member-card-mid">MEMBER SINCE 2026</div>
+            <div class="member-card-bottom">EXECUTIVE MEMBER</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-col">
+        <h4>About Us</h4>
+        <ul>
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Warehouse Locations</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press &amp; Media</a></li>
+          <li><a href="#">Sustainability</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Customer Service</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Shipping &amp; Delivery</a></li>
+          <li><a href="#">Returns &amp; Refunds</a></li>
+          <li><a href="#">Order Tracking</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Policies</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Use</a></li>
+          <li><a href="#">Accessibility</a></li>
+          <li><a href="#">Age Verification</a></li>
+          <li><a href="#">Responsible Drinking</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Membership</h4>
+        <ul>
+          <li><a href="membership.html">Join Now</a></li>
+          <li><a href="membership.html">Member Benefits</a></li>
+          <li><a href="membership.html">Executive Upgrade</a></li>
+          <li><a href="membership.html">Business Membership</a></li>
+          <li><a href="membership.html">Gift Membership</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect With Us</h4>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook" class="social-icon">f</a>
+          <a href="#" aria-label="Instagram" class="social-icon">in</a>
+          <a href="#" aria-label="Twitter / X" class="social-icon">X</a>
+          <a href="#" aria-label="YouTube" class="social-icon">YT</a>
+        </div>
+        <div class="footer-app">
+          <p>Get the App</p>
+          <div class="app-badges">
+            <a href="#" class="app-badge">App Store</a>
+            <a href="#" class="app-badge">Google Play</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 Sergio's Liquor Warehouse. All rights reserved.</p>
+        <p class="age-notice">You must be 21 years of age or older to purchase alcohol. Please drink responsibly.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Carousel functionality
+    (function () {
+      const slides = document.querySelectorAll('.carousel-slide');
+      const dots = document.querySelectorAll('.carousel-dots .dot');
+      const prevBtn = document.querySelector('.carousel-prev');
+      const nextBtn = document.querySelector('.carousel-next');
+      let current = 0;
+      let timer;
+
+      function goTo(index) {
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = (index + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+      }
+
+      function advance() {
+        goTo(current + 1);
+      }
+
+      function resetTimer() {
+        clearInterval(timer);
+        timer = setInterval(advance, 5000);
+      }
+
+      prevBtn.addEventListener('click', function () { goTo(current - 1); resetTimer(); });
+      nextBtn.addEventListener('click', function () { goTo(current + 1); resetTimer(); });
+      dots.forEach(function (dot, i) {
+        dot.addEventListener('click', function () { goTo(i); resetTimer(); });
+      });
+
+      timer = setInterval(advance, 5000);
+    })();
+
+    // Mobile nav toggle
+    (function () {
+      const toggle = document.querySelector('.nav-toggle');
+      const navList = document.querySelector('.nav-list');
+      toggle.addEventListener('click', function () {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        navList.classList.toggle('open');
+      });
+    })();
+  </script>
+
+</body>
+</html>

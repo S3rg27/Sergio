@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deals &amp; Promotions | Sergio's Liquor Warehouse</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico">
+</head>
+<body>
+
+  <!-- Age Verification Modal -->
+  <div class="age-modal" id="ageModal">
+    <div class="age-modal-content">
+      <div style="font-size:3rem;margin-bottom:16px;">&#127866;</div>
+      <h2>Age Verification Required</h2>
+      <p>You must be 21 years or older to enter this site. Please verify your age.</p>
+      <div class="age-buttons">
+        <button class="btn btn-primary" id="ageYes">I am 21+</button>
+        <button class="btn btn-outline" id="ageNo">I am under 21</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Utility Bar -->
+  <div class="utility-bar">
+    <div class="container">
+      <div class="utility-left">
+        <span>&#127482;&#127480; US</span>
+        <a href="#">Store Locations</a>
+        <a href="#">Customer Service</a>
+      </div>
+      <div class="utility-right">
+        <a href="#">Order Status</a>
+        <a href="account.html">Sign In / Register</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header" id="mainHeader">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">SL</div>
+          <div class="logo-text">
+            <h1>Sergio's Liquor</h1>
+            <span>Warehouse</span>
+          </div>
+        </a>
+        <div class="search-bar">
+          <input type="text" placeholder="Search wines, spirits, beer...">
+          <button>&#128269;</button>
+        </div>
+        <div class="header-actions">
+          <a href="account.html">
+            <span class="icon">&#128100;</span>
+            <span class="label-text">Account</span>
+          </a>
+          <a href="cart.html" class="cart-link">
+            <span class="icon">&#128722;</span>
+            <span class="label-text">Cart</span>
+            <span class="cart-count" id="cartCount">3</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container">
+      <button class="hamburger" id="hamburger">&#9776; Menu</button>
+      <ul id="navMenu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop All</a></li>
+        <li><a href="shop.html#wine">Wine</a></li>
+        <li><a href="shop.html#spirits">Spirits</a></li>
+        <li><a href="shop.html#beer">Beer</a></li>
+        <li><a href="shop.html#mixers">Mixers &amp; More</a></li>
+        <li><a href="deals.html" class="active">Deals</a></li>
+        <li><a href="membership.html">Membership</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Breadcrumbs -->
+  <div class="container">
+    <div class="breadcrumbs">
+      <a href="index.html">Home</a> <span>›</span> Deals &amp; Promotions
+    </div>
+  </div>
+
+  <!-- Hero Banner -->
+  <section style="background:linear-gradient(135deg,#8B0000,#E31837);color:#fff;padding:48px 0;text-align:center;">
+    <div class="container">
+      <h2 style="font-size:2.5rem;margin-bottom:12px;">This Week's Hot Deals</h2>
+      <p style="font-size:1.1rem;opacity:0.9;margin-bottom:20px;">Limited time offers — save big on premium spirits, wines &amp; more!</p>
+      <div class="countdown">
+        <div class="countdown-item">
+          <span class="number">03</span>
+          <span class="label">Days</span>
+        </div>
+        <div class="countdown-item">
+          <span class="number">14</span>
+          <span class="label">Hours</span>
+        </div>
+        <div class="countdown-item">
+          <span class="number">27</span>
+          <span class="label">Minutes</span>
+        </div>
+        <div class="countdown-item">
+          <span class="number">45</span>
+          <span class="label">Seconds</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deal Tabs -->
+  <section class="section">
+    <div class="container">
+      <div class="deals-tabs">
+        <button class="tab-btn active" data-tab="all">All Deals</button>
+        <button class="tab-btn" data-tab="wine">Wine Deals</button>
+        <button class="tab-btn" data-tab="beer">Beer Deals</button>
+        <button class="tab-btn" data-tab="spirits">Spirits Deals</button>
+        <button class="tab-btn" data-tab="bulk">Bulk Savings</button>
+      </div>
+
+      <!-- Featured Deal -->
+      <div class="featured-deal">
+        <div class="featured-deal-image" style="background:linear-gradient(135deg,#DAA520,#B8860B);">
+          &#129347;
+        </div>
+        <div class="featured-deal-info">
+          <span class="badge badge-limited" style="position:static;display:inline-block;margin-bottom:12px;">Deal of the Week</span>
+          <h3>Hennessy VSOP Privilege Cognac</h3>
+          <p style="color:#666;margin:8px 0;">750ml &bull; Smooth &amp; rich with notes of vanilla and cinnamon</p>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div style="margin:12px 0;">
+            <span style="font-size:1rem;color:#999;text-decoration:line-through;">$64.99</span>
+            <span style="font-size:2rem;font-weight:800;color:#E31837;margin-left:12px;">$49.99</span>
+          </div>
+          <p style="color:#27ae60;font-weight:600;margin-bottom:16px;">You save $15.00 (23%)</p>
+          <button class="btn btn-primary add-to-cart-btn" style="width:auto;">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- All Deals Tab -->
+      <div class="tab-panel active" id="tab-all">
+        <div class="product-grid">
+          <!-- Deal 1 -->
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#722f37,#4a1a2e);">
+              <span class="badge badge-sale">Save 25%</span>
+              &#127863;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Josh Cellars</div>
+              <div class="product-name">Cabernet Sauvignon</div>
+              <div class="product-size">750ml</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+              <div class="product-price"><span class="original-price">$18.99</span> $13.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $5.00</div>
+          </div>
+
+          <!-- Deal 2 -->
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#D2691E,#8B4513);">
+              <span class="badge badge-sale">Save 20%</span>
+              &#129347;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Bulleit</div>
+              <div class="product-name">Bourbon Frontier Whiskey</div>
+              <div class="product-size">1L</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <div class="product-price"><span class="original-price">$39.99</span> $31.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $8.00</div>
+          </div>
+
+          <!-- Deal 3 -->
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#F0E68C,#DAA520);">
+              <span class="badge badge-sale">Save 30%</span>
+              &#127866;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Corona</div>
+              <div class="product-name">Extra 24-Pack</div>
+              <div class="product-size">24 x 12oz</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+              <div class="product-price"><span class="original-price">$28.99</span> $19.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $9.00</div>
+          </div>
+
+          <!-- Deal 4 -->
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#87CEEB,#4682B4);">
+              <span class="badge badge-member">Members Only</span>
+              &#127864;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Tito's</div>
+              <div class="product-name">Handmade Vodka</div>
+              <div class="product-size">1.75L</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <div class="product-price"><span class="original-price">$34.99</span> $26.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">MEMBERS SAVE $8.00</div>
+          </div>
+
+          <!-- Deal 5 -->
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#E8D5B7,#C2A66B);">
+              <span class="badge badge-sale">Save 15%</span>
+              &#129347;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Don Julio</div>
+              <div class="product-name">Blanco Tequila</div>
+              <div class="product-size">750ml</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <div class="product-price"><span class="original-price">$52.99</span> $44.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $8.00</div>
+          </div>
+
+          <!-- Deal 6 -->
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#F5F5DC,#FFFDD0);">
+              <span class="badge badge-sale">Save 22%</span>
+              &#127863;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">La Marca</div>
+              <div class="product-name">Prosecco</div>
+              <div class="product-size">750ml</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+              <div class="product-price"><span class="original-price">$17.99</span> $13.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $4.00</div>
+          </div>
+
+          <!-- Deal 7 -->
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#2E8B57,#006400);">
+              <span class="badge badge-limited">Limited Time</span>
+              &#127864;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Hendrick's</div>
+              <div class="product-name">Gin</div>
+              <div class="product-size">750ml</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <div class="product-price"><span class="original-price">$39.99</span> $32.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $7.00</div>
+          </div>
+
+          <!-- Deal 8 -->
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#fff,#e8e8e8);">
+              <span class="badge badge-sale">Save 18%</span>
+              &#127864;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Captain Morgan</div>
+              <div class="product-name">Spiced Rum</div>
+              <div class="product-size">1.75L</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+              <div class="product-price"><span class="original-price">$27.99</span> $22.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $5.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wine Tab -->
+      <div class="tab-panel" id="tab-wine">
+        <div class="product-grid">
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#722f37,#4a1a2e);">
+              <span class="badge badge-sale">Save 25%</span>&#127863;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Josh Cellars</div>
+              <div class="product-name">Cabernet Sauvignon</div>
+              <div class="product-size">750ml</div>
+              <div class="product-price"><span class="original-price">$18.99</span> $13.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $5.00</div>
+          </div>
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#F5F5DC,#FFFDD0);">
+              <span class="badge badge-sale">Save 22%</span>&#127863;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">La Marca</div>
+              <div class="product-name">Prosecco</div>
+              <div class="product-size">750ml</div>
+              <div class="product-price"><span class="original-price">$17.99</span> $13.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $4.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beer Tab -->
+      <div class="tab-panel" id="tab-beer">
+        <div class="product-grid">
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#F0E68C,#DAA520);">
+              <span class="badge badge-sale">Save 30%</span>&#127866;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Corona</div>
+              <div class="product-name">Extra 24-Pack</div>
+              <div class="product-size">24 x 12oz</div>
+              <div class="product-price"><span class="original-price">$28.99</span> $19.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $9.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spirits Tab -->
+      <div class="tab-panel" id="tab-spirits">
+        <div class="product-grid">
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#D2691E,#8B4513);">
+              <span class="badge badge-sale">Save 20%</span>&#129347;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Bulleit</div>
+              <div class="product-name">Bourbon Frontier Whiskey</div>
+              <div class="product-size">1L</div>
+              <div class="product-price"><span class="original-price">$39.99</span> $31.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $8.00</div>
+          </div>
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#E8D5B7,#C2A66B);">
+              <span class="badge badge-sale">Save 15%</span>&#129347;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Don Julio</div>
+              <div class="product-name">Blanco Tequila</div>
+              <div class="product-size">750ml</div>
+              <div class="product-price"><span class="original-price">$52.99</span> $44.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $8.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bulk Tab -->
+      <div class="tab-panel" id="tab-bulk">
+        <h3 class="section-title">Buy More, Save More</h3>
+        <div class="product-grid">
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#722f37,#4a1a2e);">
+              <span class="badge badge-sale">Case Deal</span>&#127863;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Mixed Wine</div>
+              <div class="product-name">12-Bottle Red Wine Case</div>
+              <div class="product-size">12 x 750ml</div>
+              <div class="product-price"><span class="original-price">$179.88</span> $129.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $49.89 — Case Discount</div>
+          </div>
+          <div class="product-card deal-card">
+            <div class="product-image" style="background:linear-gradient(135deg,#F0E68C,#DAA520);">
+              <span class="badge badge-sale">Bulk Price</span>&#127866;
+            </div>
+            <div class="product-info">
+              <div class="product-brand">Variety Pack</div>
+              <div class="product-name">Craft Beer Sampler — 48 Pack</div>
+              <div class="product-size">48 x 12oz</div>
+              <div class="product-price"><span class="original-price">$59.99</span> $44.99</div>
+              <button class="add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="savings">SAVE $15.00 — Bulk Discount</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Member Exclusive Section -->
+  <section class="member-banner">
+    <div class="container">
+      <h2>&#128274; Member Exclusive Deals</h2>
+      <p>Join Sergio's Membership to unlock exclusive pricing, early access to limited releases, and more.</p>
+      <a href="membership.html" class="btn btn-primary">Join Now — Starting at $60/year</a>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter-bar">
+    <div class="container">
+      <h3>Get Deals Delivered to Your Inbox</h3>
+      <form class="newsletter-form" id="newsletterForm">
+        <input type="email" placeholder="Enter your email address" required>
+        <button type="submit" class="btn btn-secondary">Subscribe</button>
+      </form>
+      <div class="newsletter-msg" id="newsletterMsg"></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <a href="shop.html">All Products</a>
+          <a href="shop.html#wine">Wine</a>
+          <a href="shop.html#spirits">Spirits</a>
+          <a href="shop.html#beer">Beer</a>
+          <a href="deals.html">Weekly Deals</a>
+        </div>
+        <div class="footer-col">
+          <h4>Customer Service</h4>
+          <a href="#">Contact Us</a>
+          <a href="#">Shipping Info</a>
+          <a href="#">Returns &amp; Refunds</a>
+          <a href="#">FAQ</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="#">About Us</a>
+          <a href="#">Store Locations</a>
+          <a href="#">Careers</a>
+          <a href="membership.html">Membership</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Accessibility</a>
+          <a href="#">Responsible Drinking</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Sergio's Liquor Warehouse. All rights reserved.</p>
+        <p class="age-notice">You must be 21 years of age or older to purchase alcohol.</p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="backToTop">&#8593;</button>
+  <script src="script.js"></script>
+</body>
+</html>

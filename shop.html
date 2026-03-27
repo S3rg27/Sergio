@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop All | Sergio's Liquor Warehouse</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico">
+</head>
+<body>
+
+  <!-- Age Verification Modal -->
+  <div class="age-modal" id="ageModal">
+    <div class="age-modal-content">
+      <div style="font-size:3rem;margin-bottom:16px;">&#127866;</div>
+      <h2>Age Verification Required</h2>
+      <p>You must be 21 years or older to enter this site. Please verify your age.</p>
+      <div class="age-buttons">
+        <button class="btn btn-primary" id="ageYes">I am 21+</button>
+        <button class="btn btn-outline" id="ageNo">I am under 21</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Utility Bar -->
+  <div class="utility-bar">
+    <div class="container">
+      <div class="utility-left">
+        <span>&#127482;&#127480; US</span>
+        <a href="#">Store Locations</a>
+        <a href="#">Customer Service</a>
+      </div>
+      <div class="utility-right">
+        <a href="#">Order Status</a>
+        <a href="account.html">Sign In / Register</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header" id="mainHeader">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">SL</div>
+          <div class="logo-text">
+            <h1>Sergio's Liquor</h1>
+            <span>Warehouse</span>
+          </div>
+        </a>
+        <div class="search-bar">
+          <input type="text" placeholder="Search wines, spirits, beer...">
+          <button>&#128269;</button>
+        </div>
+        <div class="header-actions">
+          <a href="account.html">
+            <span class="icon">&#128100;</span>
+            <span class="label-text">Account</span>
+          </a>
+          <a href="cart.html" class="cart-link">
+            <span class="icon">&#128722;</span>
+            <span class="label-text">Cart</span>
+            <span class="cart-count" id="cartCount">3</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container">
+      <button class="hamburger" id="hamburger">&#9776; Menu</button>
+      <ul id="navMenu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html" class="active">Shop All</a></li>
+        <li><a href="shop.html#wine">Wine</a></li>
+        <li><a href="shop.html#spirits">Spirits</a></li>
+        <li><a href="shop.html#beer">Beer</a></li>
+        <li><a href="shop.html#mixers">Mixers &amp; More</a></li>
+        <li><a href="deals.html">Deals</a></li>
+        <li><a href="membership.html">Membership</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Breadcrumbs -->
+  <div class="container">
+    <div class="breadcrumbs">
+      <a href="index.html">Home</a> <span>&rsaquo;</span> Shop All
+    </div>
+  </div>
+
+  <!-- Shop Content -->
+  <section class="section section-gray">
+    <div class="container">
+      <button class="filter-toggle" id="filterToggle">&#9776; Show Filters</button>
+      <div class="shop-layout">
+        <!-- Sidebar Filters -->
+        <aside class="filter-sidebar" id="filterSidebar">
+          <h3>Filters</h3>
+
+          <div class="filter-group">
+            <h4>Category</h4>
+            <label><input type="checkbox"> Red Wine</label>
+            <label><input type="checkbox"> White Wine</label>
+            <label><input type="checkbox"> Sparkling Wine</label>
+            <label><input type="checkbox"> Whiskey</label>
+            <label><input type="checkbox"> Vodka</label>
+            <label><input type="checkbox"> Tequila</label>
+            <label><input type="checkbox"> Rum</label>
+            <label><input type="checkbox"> Gin</label>
+            <label><input type="checkbox"> Brandy &amp; Cognac</label>
+            <label><input type="checkbox"> Beer</label>
+            <label><input type="checkbox"> Mixers</label>
+          </div>
+
+          <div class="filter-group">
+            <h4>Price Range</h4>
+            <label><input type="checkbox"> Under $25</label>
+            <label><input type="checkbox"> $25 - $50</label>
+            <label><input type="checkbox"> $50 - $100</label>
+            <label><input type="checkbox"> $100 - $200</label>
+            <label><input type="checkbox"> $200+</label>
+          </div>
+
+          <div class="filter-group">
+            <h4>Brand</h4>
+            <label><input type="checkbox"> Jack Daniel's</label>
+            <label><input type="checkbox"> Hennessy</label>
+            <label><input type="checkbox"> Grey Goose</label>
+            <label><input type="checkbox"> Patron</label>
+            <label><input type="checkbox"> Bacardi</label>
+            <label><input type="checkbox"> Maker's Mark</label>
+            <label><input type="checkbox"> Tanqueray</label>
+            <label><input type="checkbox"> Caymus</label>
+          </div>
+
+          <div class="filter-group">
+            <h4>Rating</h4>
+            <label><input type="checkbox"> 4 Stars &amp; Up</label>
+            <label><input type="checkbox"> 3 Stars &amp; Up</label>
+            <label><input type="checkbox"> 2 Stars &amp; Up</label>
+          </div>
+        </aside>
+
+        <!-- Products -->
+        <div class="shop-main">
+          <div class="shop-toolbar">
+            <span class="results-count">Showing 1-24 of 156 results</span>
+            <select id="sortSelect">
+              <option value="best">Best Match</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+              <option value="newest">Newest Arrivals</option>
+            </select>
+          </div>
+
+          <div class="product-grid">
+            <!-- Product 1 -->
+            <div class="product-card" data-price="79.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#722f37,#4a1a2e);">
+                <span class="badge badge-sale">Sale</span>
+                &#127863;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Caymus</div>
+                <div class="product-name">Cabernet Sauvignon 2021</div>
+                <div class="product-size">750ml</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="product-price">
+                  <span class="original-price">$89.99</span> $79.99
+                </div>
+                <div class="member-price">Member: $74.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card" data-price="34.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#8B4513,#654321);">
+                &#129347;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Hennessy</div>
+                <div class="product-name">VS Cognac</div>
+                <div class="product-size">750ml</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+                <div class="product-price">$34.99</div>
+                <div class="member-price">Member: $31.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card" data-price="29.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#87CEEB,#4682B4);">
+                <span class="badge badge-new">New</span>
+                &#127864;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Grey Goose</div>
+                <div class="product-name">Original Vodka</div>
+                <div class="product-size">750ml</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+                <div class="product-price">$29.99</div>
+                <div class="member-price">Member: $27.49</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="product-card" data-price="149.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#DAA520,#B8860B);">
+                <span class="badge badge-member">Members Only</span>
+                &#127858;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Clase Azul</div>
+                <div class="product-name">Reposado Tequila</div>
+                <div class="product-size">750ml</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="product-price">$149.99</div>
+                <div class="member-price">Member: $139.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 5 -->
+            <div class="product-card" data-price="32.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#D2691E,#8B4513);">
+                &#129347;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Jack Daniel's</div>
+                <div class="product-name">Old No. 7 Tennessee Whiskey</div>
+                <div class="product-size">1L</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="product-price">$32.99</div>
+                <div class="member-price">Member: $29.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 6 -->
+            <div class="product-card" data-price="44.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#D2B48C,#C4A882);">
+                &#129347;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Maker's Mark</div>
+                <div class="product-name">Kentucky Straight Bourbon</div>
+                <div class="product-size">1.75L</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+                <div class="product-price">$44.99</div>
+                <div class="member-price">Member: $41.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 7 -->
+            <div class="product-card" data-price="22.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#F5F5DC,#FFFDD0);">
+                &#127863;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Kim Crawford</div>
+                <div class="product-name">Sauvignon Blanc 2022</div>
+                <div class="product-size">750ml</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+                <div class="product-price">$22.99</div>
+                <div class="member-price">Member: $19.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 8 -->
+            <div class="product-card" data-price="54.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#2E8B57,#006400);">
+                &#127864;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Tanqueray</div>
+                <div class="product-name">No. Ten Gin</div>
+                <div class="product-size">1L</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="product-price">$54.99</div>
+                <div class="member-price">Member: $49.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 9 -->
+            <div class="product-card" data-price="18.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#F0E68C,#DAA520);">
+                <span class="badge badge-sale">Sale</span>
+                &#127866;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Modelo</div>
+                <div class="product-name">Especial 24-Pack</div>
+                <div class="product-size">24 x 12oz</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+                <div class="product-price">
+                  <span class="original-price">$24.99</span> $18.99
+                </div>
+                <div class="member-price">Member: $16.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 10 -->
+            <div class="product-card" data-price="49.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#E8D5B7,#C2A66B);">
+                &#129347;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Patron</div>
+                <div class="product-name">Silver Tequila</div>
+                <div class="product-size">750ml</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+                <div class="product-price">$49.99</div>
+                <div class="member-price">Member: $44.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 11 -->
+            <div class="product-card" data-price="24.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#fff,#e8e8e8);">
+                &#127864;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Bacardi</div>
+                <div class="product-name">Superior White Rum</div>
+                <div class="product-size">1.75L</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></div>
+                <div class="product-price">$24.99</div>
+                <div class="member-price">Member: $22.49</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+
+            <!-- Product 12 -->
+            <div class="product-card" data-price="189.99">
+              <div class="product-image" style="background:linear-gradient(135deg,#722f37,#2c0a1a);">
+                <span class="badge badge-limited">Limited</span>
+                &#127863;
+              </div>
+              <div class="product-info">
+                <div class="product-brand">Opus One</div>
+                <div class="product-name">Napa Valley Red Blend 2019</div>
+                <div class="product-size">750ml</div>
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="product-price">$189.99</div>
+                <div class="member-price">Member: $179.99</div>
+                <button class="add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <a href="#">&#8249;</a>
+            <span class="active">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#">&#8250;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <a href="shop.html">All Products</a>
+          <a href="shop.html#wine">Wine</a>
+          <a href="shop.html#spirits">Spirits</a>
+          <a href="shop.html#beer">Beer</a>
+          <a href="deals.html">Weekly Deals</a>
+          <a href="#">New Arrivals</a>
+        </div>
+        <div class="footer-col">
+          <h4>Customer Service</h4>
+          <a href="#">Contact Us</a>
+          <a href="#">Shipping Info</a>
+          <a href="#">Returns &amp; Refunds</a>
+          <a href="#">FAQ</a>
+          <a href="#">Order Status</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="#">About Us</a>
+          <a href="#">Store Locations</a>
+          <a href="#">Careers</a>
+          <a href="membership.html">Membership</a>
+          <a href="#">Gift Cards</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Accessibility</a>
+          <a href="#">Responsible Drinking</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Sergio's Liquor Warehouse. All rights reserved.</p>
+        <p class="age-notice">You must be 21 years of age or older to purchase alcohol.</p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="backToTop">&#8593;</button>
+  <script src="script.js"></script>
+</body>
+</html>
