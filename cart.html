@@ -94,10 +94,10 @@
   <!-- Cart Content -->
   <section class="section">
     <div class="container">
-      <h2 class="section-title" style="text-align:left;">Shopping Cart <span style="font-size:1rem;color:#666;font-weight:400;">(3 items)</span></h2>
+      <h2 class="section-title text-left">Shopping Cart <span class="cart-item-count">(3 items)</span></h2>
 
       <!-- Age Notice -->
-      <div class="age-warning" style="border-radius:8px;margin-bottom:24px;">
+      <div class="age-warning">
         &#9888; Age verification required at delivery. Valid government-issued ID proving you are 21+ must be presented.
       </div>
 
@@ -186,7 +186,7 @@
             </tbody>
           </table>
 
-          <div style="margin-top:20px;">
+          <div class="cart-actions">
             <a href="shop.html" class="btn btn-outline">&larr; Continue Shopping</a>
           </div>
         </div>
@@ -208,11 +208,11 @@
           </div>
           <div class="summary-row">
             <span>Shipping</span>
-            <span id="shipping" style="color:#27ae60;font-weight:600;">FREE</span>
+            <span id="shipping" class="free-shipping">FREE</span>
           </div>
           <div class="summary-row" id="promoRow" style="display:none;">
             <span>Promo Discount</span>
-            <span id="promoDiscount" style="color:#27ae60;">-$0.00</span>
+            <span id="promoDiscount" class="promo-discount">-$0.00</span>
           </div>
           <div class="summary-row total">
             <span>Order Total</span>
@@ -223,13 +223,13 @@
             <input type="text" placeholder="Promo code" id="promoCode">
             <button id="applyPromo">Apply</button>
           </div>
-          <div id="promoMsg" style="font-size:0.8rem;margin-bottom:12px;"></div>
+          <div id="promoMsg" class="promo-msg"></div>
 
-          <button class="btn btn-primary btn-block" style="margin-top:8px;">Proceed to Checkout</button>
+          <button class="btn btn-primary btn-block">Proceed to Checkout</button>
 
-          <div style="margin-top:16px;text-align:center;font-size:0.8rem;color:#666;">
+          <div class="checkout-info">
             <p>&#128274; Secure checkout</p>
-            <p style="margin-top:4px;">We accept: Visa, Mastercard, Amex, Discover</p>
+            <p>We accept: Visa, Mastercard, Amex, Discover</p>
           </div>
         </div>
       </div>

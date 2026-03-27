@@ -425,6 +425,38 @@ input, select, textarea {
   position: relative;
 }
 
+.product-image-wine {
+  background: linear-gradient(135deg, #722f37, #4a1a2e);
+}
+
+.product-image-bourbon {
+  background: linear-gradient(135deg, #D2691E, #8B4513);
+}
+
+.product-image-beer {
+  background: linear-gradient(135deg, #F0E68C, #DAA520);
+}
+
+.product-image-vodka {
+  background: linear-gradient(135deg, #E0E0E0, #A0A0A0);
+}
+
+.product-image-tequila {
+  background: linear-gradient(135deg, #E8D5B7, #C2A66B);
+}
+
+.product-image-sparkling {
+  background: linear-gradient(135deg, #F5E6D3, #D4A574);
+}
+
+.product-image-gin {
+  background: linear-gradient(135deg, #B8D4B8, #6B8E6B);
+}
+
+.product-image-rum {
+  background: linear-gradient(135deg, #C4873B, #8B5E3C);
+}
+
 .product-info {
   padding: 16px;
 }
@@ -1088,6 +1120,45 @@ input, select, textarea {
   font-weight: 600;
 }
 
+.cart-actions {
+  margin-top: 20px;
+}
+
+.free-shipping {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.promo-discount {
+  color: #27ae60;
+}
+
+.promo-msg {
+  font-size: 0.8rem;
+  margin-bottom: 12px;
+}
+
+.checkout-info {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.checkout-info p + p {
+  margin-top: 4px;
+}
+
+.cart-item-count {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 400;
+}
+
+.section-title.text-left {
+  text-align: left;
+}
+
 /* ===== MEMBERSHIP CARDS ===== */
 .membership-grid {
   display: grid;
@@ -1524,6 +1595,158 @@ input, select, textarea {
   border-top: 1px solid #eee;
 }
 
+/* ===== ACCOUNT PAGE ===== */
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #003B64;
+  margin-bottom: 6px;
+}
+
+.page-subtitle {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 28px;
+}
+
+.age-banner {
+  background: linear-gradient(135deg, #E31837 0%, #b8102b 100%);
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 8px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(227, 24, 55, 0.3);
+}
+
+.age-banner .age-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.2);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.age-banner p {
+  margin: 0;
+}
+
+.age-banner strong {
+  font-size: 1.05rem;
+}
+
+.account-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.account-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 36px 32px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+.account-card h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #003B64;
+  margin-bottom: 6px;
+}
+
+.account-card .card-desc {
+  font-size: 0.88rem;
+  color: #777;
+  margin-bottom: 24px;
+}
+
+.form-group label .req {
+  color: #E31837;
+}
+
+.forgot-link {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: #003B64;
+  margin-bottom: 20px;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.social-btn .social-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.social-icon.google { background: #DB4437; }
+.social-icon.facebook { background: #1877F2; }
+.social-icon.apple { background: #000; }
+
+.benefits-section {
+  background: #fff;
+  border-radius: 10px;
+  padding: 36px 32px;
+  margin-bottom: 40px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+.benefits-section h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #003B64;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.benefit-item {
+  text-align: center;
+}
+
+.benefit-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 12px;
+  background: #f0f5fa;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #003B64;
+}
+
+.benefit-item h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #003B64;
+  margin-bottom: 4px;
+}
+
+.benefit-item p {
+  font-size: 0.78rem;
+  color: #777;
+  line-height: 1.4;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1200px) {
   .product-grid {
@@ -1567,6 +1790,10 @@ input, select, textarea {
   }
 
   .auth-container {
+    grid-template-columns: 1fr;
+  }
+
+  .account-grid {
     grid-template-columns: 1fr;
   }
 

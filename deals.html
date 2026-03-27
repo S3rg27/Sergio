@@ -12,7 +12,7 @@
   <!-- Age Verification Modal -->
   <div class="age-modal" id="ageModal">
     <div class="age-modal-content">
-      <div style="font-size:3rem;margin-bottom:16px;">&#127866;</div>
+      <div class="age-modal-icon">&#127866;</div>
       <h2>Age Verification Required</h2>
       <p>You must be 21 years or older to enter this site. Please verify your age.</p>
       <div class="age-buttons">
@@ -92,10 +92,10 @@
   </div>
 
   <!-- Hero Banner -->
-  <section style="background:linear-gradient(135deg,#8B0000,#E31837);color:#fff;padding:48px 0;text-align:center;">
+  <section class="deals-hero">
     <div class="container">
-      <h2 style="font-size:2.5rem;margin-bottom:12px;">This Week's Hot Deals</h2>
-      <p style="font-size:1.1rem;opacity:0.9;margin-bottom:20px;">Limited time offers — save big on premium spirits, wines &amp; more!</p>
+      <h2>This Week's Hot Deals</h2>
+      <p>Limited time offers — save big on premium spirits, wines &amp; more!</p>
       <div class="countdown">
         <div class="countdown-item">
           <span class="number">03</span>
@@ -130,20 +130,20 @@
 
       <!-- Featured Deal -->
       <div class="featured-deal">
-        <div class="featured-deal-image" style="background:linear-gradient(135deg,#DAA520,#B8860B);">
+        <div class="featured-deal-image">
           &#129347;
         </div>
         <div class="featured-deal-info">
-          <span class="badge badge-limited" style="position:static;display:inline-block;margin-bottom:12px;">Deal of the Week</span>
+          <span class="badge badge-limited badge-inline">Deal of the Week</span>
           <h3>Hennessy VSOP Privilege Cognac</h3>
-          <p style="color:#666;margin:8px 0;">750ml &bull; Smooth &amp; rich with notes of vanilla and cinnamon</p>
+          <p class="featured-deal-description">750ml &bull; Smooth &amp; rich with notes of vanilla and cinnamon</p>
           <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <div style="margin:12px 0;">
-            <span style="font-size:1rem;color:#999;text-decoration:line-through;">$64.99</span>
-            <span style="font-size:2rem;font-weight:800;color:#E31837;margin-left:12px;">$49.99</span>
+          <div class="featured-deal-pricing">
+            <span class="original-price">$64.99</span>
+            <span class="sale-price">$49.99</span>
           </div>
-          <p style="color:#27ae60;font-weight:600;margin-bottom:16px;">You save $15.00 (23%)</p>
-          <button class="btn btn-primary add-to-cart-btn" style="width:auto;">Add to Cart</button>
+          <p class="featured-deal-savings">You save $15.00 (23%)</p>
+          <button class="btn btn-primary add-to-cart-btn">Add to Cart</button>
         </div>
       </div>
 
@@ -152,7 +152,7 @@
         <div class="product-grid">
           <!-- Deal 1 -->
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#722f37,#4a1a2e);">
+            <div class="product-image product-image-wine">
               <span class="badge badge-sale">Save 25%</span>
               &#127863;
             </div>
@@ -169,7 +169,7 @@
 
           <!-- Deal 2 -->
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#D2691E,#8B4513);">
+            <div class="product-image product-image-bourbon">
               <span class="badge badge-sale">Save 20%</span>
               &#129347;
             </div>
@@ -186,7 +186,7 @@
 
           <!-- Deal 3 -->
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#F0E68C,#DAA520);">
+            <div class="product-image product-image-beer">
               <span class="badge badge-sale">Save 30%</span>
               &#127866;
             </div>
@@ -203,7 +203,7 @@
 
           <!-- Deal 4 -->
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#87CEEB,#4682B4);">
+            <div class="product-image product-image-vodka">
               <span class="badge badge-member">Members Only</span>
               &#127864;
             </div>
@@ -220,7 +220,7 @@
 
           <!-- Deal 5 -->
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#E8D5B7,#C2A66B);">
+            <div class="product-image product-image-tequila">
               <span class="badge badge-sale">Save 15%</span>
               &#129347;
             </div>
@@ -237,7 +237,7 @@
 
           <!-- Deal 6 -->
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#F5F5DC,#FFFDD0);">
+            <div class="product-image product-image-sparkling">
               <span class="badge badge-sale">Save 22%</span>
               &#127863;
             </div>
@@ -254,7 +254,7 @@
 
           <!-- Deal 7 -->
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#2E8B57,#006400);">
+            <div class="product-image product-image-gin">
               <span class="badge badge-limited">Limited Time</span>
               &#127864;
             </div>
@@ -271,7 +271,7 @@
 
           <!-- Deal 8 -->
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#fff,#e8e8e8);">
+            <div class="product-image product-image-rum">
               <span class="badge badge-sale">Save 18%</span>
               &#127864;
             </div>
@@ -292,7 +292,7 @@
       <div class="tab-panel" id="tab-wine">
         <div class="product-grid">
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#722f37,#4a1a2e);">
+            <div class="product-image product-image-wine">
               <span class="badge badge-sale">Save 25%</span>&#127863;
             </div>
             <div class="product-info">
@@ -305,7 +305,7 @@
             <div class="savings">SAVE $5.00</div>
           </div>
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#F5F5DC,#FFFDD0);">
+            <div class="product-image product-image-sparkling">
               <span class="badge badge-sale">Save 22%</span>&#127863;
             </div>
             <div class="product-info">
@@ -324,7 +324,7 @@
       <div class="tab-panel" id="tab-beer">
         <div class="product-grid">
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#F0E68C,#DAA520);">
+            <div class="product-image product-image-beer">
               <span class="badge badge-sale">Save 30%</span>&#127866;
             </div>
             <div class="product-info">
@@ -343,7 +343,7 @@
       <div class="tab-panel" id="tab-spirits">
         <div class="product-grid">
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#D2691E,#8B4513);">
+            <div class="product-image product-image-bourbon">
               <span class="badge badge-sale">Save 20%</span>&#129347;
             </div>
             <div class="product-info">
@@ -356,7 +356,7 @@
             <div class="savings">SAVE $8.00</div>
           </div>
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#E8D5B7,#C2A66B);">
+            <div class="product-image product-image-tequila">
               <span class="badge badge-sale">Save 15%</span>&#129347;
             </div>
             <div class="product-info">
@@ -376,7 +376,7 @@
         <h3 class="section-title">Buy More, Save More</h3>
         <div class="product-grid">
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#722f37,#4a1a2e);">
+            <div class="product-image product-image-wine">
               <span class="badge badge-sale">Case Deal</span>&#127863;
             </div>
             <div class="product-info">
@@ -389,7 +389,7 @@
             <div class="savings">SAVE $49.89 — Case Discount</div>
           </div>
           <div class="product-card deal-card">
-            <div class="product-image" style="background:linear-gradient(135deg,#F0E68C,#DAA520);">
+            <div class="product-image product-image-beer">
               <span class="badge badge-sale">Bulk Price</span>&#127866;
             </div>
             <div class="product-info">

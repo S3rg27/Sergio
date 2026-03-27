@@ -5,695 +5,248 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In or Create Account | Sergio's Liquor Warehouse</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    /* ========== RESET & BASE ========== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      color: #333;
-      background: #f4f4f4;
-      line-height: 1.6;
-    }
-    a { text-decoration: none; color: inherit; }
-    img { max-width: 100%; }
-
-    /* ========== UTILITY BAR (top thin strip) ========== */
-    .utility-bar {
-      background: #003B64;
-      color: #fff;
-      font-size: 0.75rem;
-      padding: 6px 0;
-    }
-    .utility-bar .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .utility-bar a {
-      color: #ccc;
-      margin-left: 18px;
-      transition: color 0.2s;
-    }
-    .utility-bar a:hover { color: #fff; }
-
-    /* ========== HEADER ========== */
-    .site-header {
-      background: #fff;
-      border-bottom: 3px solid #E31837;
-      padding: 14px 0;
-    }
-    .site-header .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-      background: #E31837;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      color: #fff;
-      font-weight: 800;
-    }
-    .logo-text {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #003B64;
-      line-height: 1.2;
-    }
-    .logo-text span {
-      display: block;
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: #E31837;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-    }
-    .header-actions a {
-      color: #003B64;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: color 0.2s;
-    }
-    .header-actions a:hover { color: #E31837; }
-    .cart-badge {
-      position: relative;
-    }
-    .cart-badge .count {
-      position: absolute;
-      top: -6px;
-      right: -10px;
-      background: #E31837;
-      color: #fff;
-      font-size: 0.65rem;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-    }
-
-    /* ========== MAIN NAV ========== */
-    .main-nav {
-      background: #003B64;
-    }
-    .main-nav .container {
-      display: flex;
-      align-items: center;
-    }
-    .main-nav a {
-      display: block;
-      color: #fff;
-      padding: 12px 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-    .main-nav a:hover,
-    .main-nav a.active {
-      background: #E31837;
-    }
-
-    /* ========== CONTAINER ========== */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    /* ========== BREADCRUMBS ========== */
-    .breadcrumbs {
-      padding: 16px 0 8px;
-      font-size: 0.82rem;
-      color: #666;
-    }
-    .breadcrumbs a { color: #003B64; }
-    .breadcrumbs a:hover { text-decoration: underline; }
-    .breadcrumbs .sep { margin: 0 6px; color: #999; }
-
-    /* ========== PAGE TITLE ========== */
-    .page-title {
-      font-size: 1.75rem;
-      font-weight: 800;
-      color: #003B64;
-      margin-bottom: 6px;
-    }
-    .page-subtitle {
-      color: #666;
-      font-size: 0.95rem;
-      margin-bottom: 28px;
-    }
-
-    /* ========== AGE VERIFICATION BANNER ========== */
-    .age-banner {
-      background: linear-gradient(135deg, #E31837 0%, #b8102b 100%);
-      color: #fff;
-      padding: 14px 24px;
-      border-radius: 8px;
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(227, 24, 55, 0.3);
-    }
-    .age-banner .age-icon {
-      font-size: 2rem;
-      flex-shrink: 0;
-      background: rgba(255,255,255,0.2);
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .age-banner p { margin: 0; }
-    .age-banner strong { font-size: 1.05rem; }
-
-    /* ========== ACCOUNT COLUMNS ========== */
-    .account-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      margin-bottom: 40px;
-    }
-    .account-card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 36px 32px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-    }
-    .account-card h2 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #003B64;
-      margin-bottom: 6px;
-    }
-    .account-card .card-desc {
-      font-size: 0.88rem;
-      color: #777;
-      margin-bottom: 24px;
-    }
-
-    /* ========== FORM STYLES ========== */
-    .form-group {
-      margin-bottom: 18px;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #444;
-      margin-bottom: 5px;
-    }
-    .form-group label .req {
-      color: #E31837;
-    }
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group input[type="password"],
-    .form-group input[type="date"] {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 0.92rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      outline: none;
-    }
-    .form-group input:focus {
-      border-color: #003B64;
-      box-shadow: 0 0 0 3px rgba(0, 59, 100, 0.12);
-    }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .checkbox-group {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .checkbox-group input[type="checkbox"] {
-      margin-top: 3px;
-      accent-color: #003B64;
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-    .checkbox-group label {
-      font-size: 0.85rem;
-      color: #555;
-      cursor: pointer;
-    }
-    .checkbox-group label a {
-      color: #003B64;
-      text-decoration: underline;
-    }
-    .forgot-link {
-      display: inline-block;
-      font-size: 0.82rem;
-      color: #003B64;
-      margin-bottom: 20px;
-    }
-    .forgot-link:hover { text-decoration: underline; }
-
-    /* ========== BUTTONS ========== */
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 13px 24px;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn:active { transform: scale(0.98); }
-    .btn-red {
-      background: #E31837;
-      color: #fff;
-    }
-    .btn-red:hover { background: #c8132f; }
-    .btn-navy {
-      background: #003B64;
-      color: #fff;
-    }
-    .btn-navy:hover { background: #002a49; }
-
-    /* ========== DIVIDER ========== */
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin: 32px 0;
-    }
-    .divider::before,
-    .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #ddd;
-    }
-    .divider span {
-      font-size: 0.82rem;
-      color: #888;
-      white-space: nowrap;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 600;
-    }
-
-    /* ========== SOCIAL BUTTONS ========== */
-    .social-logins {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 40px;
-    }
-    .social-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 28px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background: #fff;
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: #444;
-      cursor: pointer;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .social-btn:hover {
-      border-color: #003B64;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .social-btn .social-icon {
-      width: 22px;
-      height: 22px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 0.85rem;
-      color: #fff;
-    }
-    .social-icon.google { background: #DB4437; }
-    .social-icon.facebook { background: #1877F2; }
-    .social-icon.apple { background: #000; }
-
-    /* ========== BENEFITS SECTION ========== */
-    .benefits-section {
-      background: #fff;
-      border-radius: 10px;
-      padding: 36px 32px;
-      margin-bottom: 40px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-    }
-    .benefits-section h3 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #003B64;
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    .benefits-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 24px;
-    }
-    .benefit-item {
-      text-align: center;
-    }
-    .benefit-icon {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 12px;
-      background: #f0f5fa;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: #003B64;
-    }
-    .benefit-item h4 {
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #003B64;
-      margin-bottom: 4px;
-    }
-    .benefit-item p {
-      font-size: 0.78rem;
-      color: #777;
-      line-height: 1.4;
-    }
-
-    /* ========== FOOTER ========== */
-    .site-footer {
-      background: #003B64;
-      color: #ccc;
-      padding: 40px 0 0;
-    }
-    .footer-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 32px;
-      padding-bottom: 32px;
-    }
-    .footer-col h4 {
-      color: #fff;
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .footer-col a {
-      display: block;
-      color: #aac4d8;
-      font-size: 0.82rem;
-      margin-bottom: 8px;
-      transition: color 0.2s;
-    }
-    .footer-col a:hover { color: #fff; }
-    .footer-bottom {
-      border-top: 1px solid rgba(255,255,255,0.15);
-      padding: 18px 0;
-      text-align: center;
-      font-size: 0.78rem;
-      color: #7fa4bc;
-    }
-
-    /* ========== RESPONSIVE ========== */
-    @media (max-width: 768px) {
-      .account-grid {
-        grid-template-columns: 1fr;
-      }
-      .benefits-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .footer-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .main-nav .container {
-        flex-wrap: wrap;
-      }
-      .main-nav a {
-        padding: 10px 14px;
-        font-size: 0.8rem;
-      }
-      .social-logins {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-    @media (max-width: 480px) {
-      .benefits-grid {
-        grid-template-columns: 1fr;
-      }
-      .footer-grid {
-        grid-template-columns: 1fr;
-      }
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  <link rel="icon" href="favicon.ico">
 </head>
 <body>
 
-  <!-- ==================== UTILITY BAR ==================== -->
-  <div class="utility-bar">
-    <div class="container">
-      <span>Welcome to Sergio's Liquor Warehouse</span>
-      <div>
-        <a href="#">Find a Store</a>
-        <a href="#">Customer Service</a>
-        <a href="#">Order Status</a>
+  <!-- Age Verification Modal -->
+  <div class="age-modal" id="ageModal">
+    <div class="age-modal-content">
+      <div style="font-size:3rem;margin-bottom:16px;">&#127866;</div>
+      <h2>Age Verification Required</h2>
+      <p>You must be 21 years or older to enter this site. Please verify your age.</p>
+      <div class="age-buttons">
+        <button class="btn btn-primary" id="ageYes">I am 21+</button>
+        <button class="btn btn-outline" id="ageNo">I am under 21</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== HEADER ==================== -->
-  <header class="site-header">
+  <!-- Utility Bar -->
+  <div class="utility-bar">
     <div class="container">
-      <a href="index.html" class="logo">
-        <div class="logo-icon">SL</div>
-        <div class="logo-text">
-          Sergio's Liquor
-          <span>Warehouse</span>
-        </div>
-      </a>
-      <div class="header-actions">
+      <div class="utility-left">
+        <span>&#127482;&#127480; US</span>
+        <a href="#">Store Locations</a>
+        <a href="#">Customer Service</a>
+      </div>
+      <div class="utility-right">
+        <a href="#">Order Status</a>
         <a href="account.html">Sign In / Register</a>
-        <a href="#" class="cart-badge">
-          Cart
-          <span class="count">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header" id="mainHeader">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">SL</div>
+          <div class="logo-text">
+            <h1>Sergio's Liquor</h1>
+            <span>Warehouse</span>
+          </div>
         </a>
+        <div class="search-bar">
+          <input type="text" placeholder="Search wines, spirits, beer...">
+          <button>&#128269;</button>
+        </div>
+        <div class="header-actions">
+          <a href="account.html">
+            <span class="icon">&#128100;</span>
+            <span class="label-text">Account</span>
+          </a>
+          <a href="cart.html" class="cart-link">
+            <span class="icon">&#128722;</span>
+            <span class="label-text">Cart</span>
+            <span class="cart-count" id="cartCount">0</span>
+          </a>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- ==================== MAIN NAV ==================== -->
+  <!-- Navigation -->
   <nav class="main-nav">
     <div class="container">
-      <a href="index.html">Home</a>
-      <a href="#">Wine</a>
-      <a href="#">Spirits</a>
-      <a href="#">Beer</a>
-      <a href="#">Mixers</a>
-      <a href="#">Deals</a>
-      <a href="#">New Arrivals</a>
-      <a href="#">Gifts</a>
+      <button class="hamburger" id="hamburger">&#9776; Menu</button>
+      <ul id="navMenu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop All</a></li>
+        <li><a href="shop.html#wine">Wine</a></li>
+        <li><a href="shop.html#spirits">Spirits</a></li>
+        <li><a href="shop.html#beer">Beer</a></li>
+        <li><a href="shop.html#mixers">Mixers &amp; More</a></li>
+        <li><a href="deals.html">Deals</a></li>
+        <li><a href="membership.html">Membership</a></li>
+      </ul>
     </div>
   </nav>
 
-  <!-- ==================== MAIN CONTENT ==================== -->
+  <!-- Main Content -->
   <main class="container">
+    <section class="section-gray">
 
-    <!-- Breadcrumbs -->
-    <div class="breadcrumbs">
-      <a href="index.html">Home</a>
-      <span class="sep">&#8250;</span>
-      <strong>Account</strong>
-    </div>
-
-    <!-- Page Title -->
-    <h1 class="page-title">Sign In or Create Account</h1>
-    <p class="page-subtitle">Access your account to track orders, save favorites, and enjoy member-only deals.</p>
-
-    <!-- Age Verification Banner -->
-    <div class="age-banner">
-      <div class="age-icon">21+</div>
-      <div>
-        <strong>Age Verification Required</strong>
-        <p>You must be 21 years of age or older to purchase alcohol. Valid identification will be required upon delivery. By creating an account, you confirm that you are of legal drinking age.</p>
-      </div>
-    </div>
-
-    <!-- ==================== SIGN IN / REGISTER COLUMNS ==================== -->
-    <div class="account-grid">
-
-      <!-- LEFT: Sign In -->
-      <div class="account-card">
-        <h2>Sign In</h2>
-        <p class="card-desc">Welcome back! Sign in to your account.</p>
-        <form action="#" method="post" id="signInForm">
-          <div class="form-group">
-            <label for="si-email">Email Address <span class="req">*</span></label>
-            <input type="email" id="si-email" name="email" placeholder="you@example.com" required>
-          </div>
-          <div class="form-group">
-            <label for="si-password">Password <span class="req">*</span></label>
-            <input type="password" id="si-password" name="password" placeholder="Enter your password" required>
-          </div>
-          <div class="checkbox-group">
-            <input type="checkbox" id="si-remember" name="remember">
-            <label for="si-remember">Remember me</label>
-          </div>
-          <a href="#" class="forgot-link">Forgot password?</a>
-          <button type="submit" class="btn btn-red">Sign In</button>
-        </form>
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs">
+        <a href="index.html">Home</a>
+        <span class="sep">&#8250;</span>
+        <strong>Account</strong>
       </div>
 
-      <!-- RIGHT: Create Account -->
-      <div class="account-card">
-        <h2>Create Account</h2>
-        <p class="card-desc">Join to enjoy exclusive deals and faster checkout.</p>
-        <form action="#" method="post" id="registerForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="reg-first">First Name <span class="req">*</span></label>
-              <input type="text" id="reg-first" name="first_name" placeholder="First name" required>
-            </div>
-            <div class="form-group">
-              <label for="reg-last">Last Name <span class="req">*</span></label>
-              <input type="text" id="reg-last" name="last_name" placeholder="Last name" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="reg-email">Email Address <span class="req">*</span></label>
-            <input type="email" id="reg-email" name="email" placeholder="you@example.com" required>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="reg-password">Password <span class="req">*</span></label>
-              <input type="password" id="reg-password" name="password" placeholder="Create a password" required>
-            </div>
-            <div class="form-group">
-              <label for="reg-confirm">Confirm Password <span class="req">*</span></label>
-              <input type="password" id="reg-confirm" name="password_confirm" placeholder="Confirm password" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="reg-dob">Date of Birth <span class="req">*</span> <small style="color: #E31837; font-weight: 400;">(Must be 21+)</small></label>
-            <input type="date" id="reg-dob" name="dob" required>
-          </div>
-          <div class="checkbox-group">
-            <input type="checkbox" id="reg-terms" name="terms" required>
-            <label for="reg-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> <span class="req">*</span></label>
-          </div>
-          <div class="checkbox-group">
-            <input type="checkbox" id="reg-newsletter" name="newsletter" checked>
-            <label for="reg-newsletter">Sign me up for exclusive deals and the newsletter</label>
-          </div>
-          <button type="submit" class="btn btn-navy">Create Account</button>
-        </form>
-      </div>
+      <!-- Page Title -->
+      <h1 class="page-title">Sign In or Create Account</h1>
+      <p class="page-subtitle">Access your account to track orders, save favorites, and enjoy member-only deals.</p>
 
-    </div>
-
-    <!-- ==================== SOCIAL LOGIN DIVIDER ==================== -->
-    <div class="divider">
-      <span>or continue with</span>
-    </div>
-
-    <div class="social-logins">
-      <button class="social-btn" type="button">
-        <span class="social-icon google">G</span>
-        Continue with Google
-      </button>
-      <button class="social-btn" type="button">
-        <span class="social-icon facebook">f</span>
-        Continue with Facebook
-      </button>
-      <button class="social-btn" type="button">
-        <span class="social-icon apple">A</span>
-        Continue with Apple
-      </button>
-    </div>
-
-    <!-- ==================== BENEFITS SECTION ==================== -->
-    <div class="benefits-section">
-      <h3>Why Create an Account?</h3>
-      <div class="benefits-grid">
-        <div class="benefit-item">
-          <div class="benefit-icon">&#128230;</div>
-          <h4>Track Orders</h4>
-          <p>Monitor your shipments in real time from warehouse to doorstep.</p>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">&#9829;</div>
-          <h4>Save Favorites</h4>
-          <p>Build wishlists and save your favorite bottles for next time.</p>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">&#127991;</div>
-          <h4>Member-Only Deals</h4>
-          <p>Unlock exclusive pricing and members-only promotions.</p>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">&#9889;</div>
-          <h4>Faster Checkout</h4>
-          <p>Save your details for quick, seamless purchasing every time.</p>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">&#128203;</div>
-          <h4>Order History</h4>
-          <p>Easily reorder past purchases and review your buying history.</p>
+      <!-- Age Verification Banner -->
+      <div class="age-banner">
+        <div class="age-icon">21+</div>
+        <div>
+          <strong>Age Verification Required</strong>
+          <p>You must be 21 years of age or older to purchase alcohol. Valid identification will be required upon delivery. By creating an account, you confirm that you are of legal drinking age.</p>
         </div>
       </div>
-    </div>
 
+      <!-- Sign In / Register Columns -->
+      <div class="account-grid">
+
+        <!-- LEFT: Sign In -->
+        <div class="account-card">
+          <h2>Sign In</h2>
+          <p class="card-desc">Welcome back! Sign in to your account.</p>
+          <form action="#" method="post" id="signInForm">
+            <div class="form-group">
+              <label for="si-email">Email Address <span class="req">*</span></label>
+              <input type="email" id="si-email" name="email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+              <label for="si-password">Password <span class="req">*</span></label>
+              <input type="password" id="si-password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="si-remember" name="remember">
+              <label for="si-remember">Remember me</label>
+            </div>
+            <a href="#" class="forgot-link">Forgot password?</a>
+            <button type="submit" class="btn btn-primary">Sign In</button>
+          </form>
+        </div>
+
+        <!-- RIGHT: Create Account -->
+        <div class="account-card">
+          <h2>Create Account</h2>
+          <p class="card-desc">Join to enjoy exclusive deals and faster checkout.</p>
+          <form action="#" method="post" id="registerForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="reg-first">First Name <span class="req">*</span></label>
+                <input type="text" id="reg-first" name="first_name" placeholder="First name" required>
+              </div>
+              <div class="form-group">
+                <label for="reg-last">Last Name <span class="req">*</span></label>
+                <input type="text" id="reg-last" name="last_name" placeholder="Last name" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-email">Email Address <span class="req">*</span></label>
+              <input type="email" id="reg-email" name="email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="reg-password">Password <span class="req">*</span></label>
+                <input type="password" id="reg-password" name="password" placeholder="Create a password" required>
+              </div>
+              <div class="form-group">
+                <label for="reg-confirm">Confirm Password <span class="req">*</span></label>
+                <input type="password" id="reg-confirm" name="password_confirm" placeholder="Confirm password" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-dob">Date of Birth <span class="req">*</span> <small style="color: #E31837; font-weight: 400;">(Must be 21+)</small></label>
+              <input type="date" id="reg-dob" name="dob" required>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="reg-terms" name="terms" required>
+              <label for="reg-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> <span class="req">*</span></label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="reg-newsletter" name="newsletter" checked>
+              <label for="reg-newsletter">Sign me up for exclusive deals and the newsletter</label>
+            </div>
+            <button type="submit" class="btn btn-secondary">Create Account</button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Social Login Divider -->
+      <div class="divider">
+        <span>or continue with</span>
+      </div>
+
+      <div class="social-logins">
+        <button class="social-btn" type="button">
+          <span class="social-icon google">G</span>
+          Continue with Google
+        </button>
+        <button class="social-btn" type="button">
+          <span class="social-icon facebook">f</span>
+          Continue with Facebook
+        </button>
+        <button class="social-btn" type="button">
+          <span class="social-icon apple">A</span>
+          Continue with Apple
+        </button>
+      </div>
+
+      <!-- Benefits Section -->
+      <div class="benefits-section">
+        <h3>Why Create an Account?</h3>
+        <div class="benefits-grid">
+          <div class="benefit-item">
+            <div class="benefit-icon">&#128230;</div>
+            <h4>Track Orders</h4>
+            <p>Monitor your shipments in real time from warehouse to doorstep.</p>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">&#9829;</div>
+            <h4>Save Favorites</h4>
+            <p>Build wishlists and save your favorite bottles for next time.</p>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">&#127991;</div>
+            <h4>Member-Only Deals</h4>
+            <p>Unlock exclusive pricing and members-only promotions.</p>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">&#9889;</div>
+            <h4>Faster Checkout</h4>
+            <p>Save your details for quick, seamless purchasing every time.</p>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">&#128203;</div>
+            <h4>Order History</h4>
+            <p>Easily reorder past purchases and review your buying history.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
   </main>
 
-  <!-- ==================== FOOTER ==================== -->
+  <!-- Footer -->
   <footer class="site-footer">
     <div class="container">
       <div class="footer-grid">
         <div class="footer-col">
           <h4>Shop</h4>
-          <a href="#">Wine</a>
-          <a href="#">Spirits</a>
-          <a href="#">Beer</a>
-          <a href="#">Mixers &amp; More</a>
+          <a href="shop.html">All Products</a>
+          <a href="shop.html#wine">Wine</a>
+          <a href="shop.html#spirits">Spirits</a>
+          <a href="shop.html#beer">Beer</a>
+          <a href="deals.html">Weekly Deals</a>
           <a href="#">New Arrivals</a>
-          <a href="#">Gift Cards</a>
         </div>
         <div class="footer-col">
           <h4>Customer Service</h4>
@@ -708,21 +261,25 @@
           <a href="#">About Us</a>
           <a href="#">Store Locations</a>
           <a href="#">Careers</a>
-          <a href="#">Press</a>
+          <a href="membership.html">Membership</a>
+          <a href="#">Gift Cards</a>
         </div>
         <div class="footer-col">
           <h4>Legal</h4>
-          <a href="#">Terms of Service</a>
           <a href="#">Privacy Policy</a>
-          <a href="#">Age Verification Policy</a>
+          <a href="#">Terms of Service</a>
           <a href="#">Accessibility</a>
+          <a href="#">Responsible Drinking</a>
         </div>
       </div>
       <div class="footer-bottom">
-        &copy; 2026 Sergio's Liquor Warehouse. All rights reserved. You must be 21 years or older to purchase alcohol. Please drink responsibly.
+        <p>&copy; 2026 Sergio's Liquor Warehouse. All rights reserved.</p>
+        <p class="age-notice">You must be 21 years of age or older to purchase alcohol.</p>
       </div>
     </div>
   </footer>
 
+  <button class="back-to-top" id="backToTop">&#8593;</button>
+  <script src="script.js"></script>
 </body>
 </html>
