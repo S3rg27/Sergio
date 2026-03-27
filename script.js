@@ -11,16 +11,19 @@ document.addEventListener('DOMContentLoaded', function () {
   // =========================================================================
 
   (function initAgeVerification() {
-    if (sessionStorage.getItem('ageVerified')) return;
-
-    var overlay = document.getElementById('age-modal-overlay');
+    var overlay = document.getElementById('ageModal');
     if (!overlay) return;
+
+    if (sessionStorage.getItem('ageVerified')) {
+      overlay.style.display = 'none';
+      return;
+    }
 
     overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    var confirmBtn = overlay.querySelector('.age-confirm');
-    var denyBtn = overlay.querySelector('.age-deny');
+    var confirmBtn = document.getElementById('ageYes');
+    var denyBtn = document.getElementById('ageNo');
 
     if (confirmBtn) {
       confirmBtn.addEventListener('click', function () {
@@ -65,12 +68,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // =========================================================================
 
   (function initMobileNav() {
-    var toggleBtn = document.querySelector('.nav-toggle');
-    var navMenu = document.querySelector('.nav-menu');
+    // Support both index.html (.nav-toggle + .nav-list) and other pages (#hamburger + #navMenu)
+    var toggleBtn = document.getElementById('hamburger') || document.querySelector('.nav-toggle');
+    var navMenu = document.getElementById('navMenu') || document.querySelector('.nav-list');
     if (!toggleBtn || !navMenu) return;
 
     toggleBtn.addEventListener('click', function () {
-      var isOpen = navMenu.classList.toggle('open');
+      var isOpen = navMenu.classList.toggle('active');
       toggleBtn.classList.toggle('active', isOpen);
       toggleBtn.setAttribute('aria-expanded', isOpen);
     });
@@ -78,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Close menu when a nav link is clicked
     navMenu.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', function () {
-        navMenu.classList.remove('open');
+        navMenu.classList.remove('active');
         toggleBtn.classList.remove('active');
         toggleBtn.setAttribute('aria-expanded', 'false');
       });
@@ -97,31 +101,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!carousel) return;
 
     var slides = carousel.querySelectorAll('.carousel-slide');
-    var dotsContainer = carousel.querySelector('.carousel-dots');
     var prevBtn = carousel.querySelector('.carousel-prev');
     var nextBtn = carousel.querySelector('.carousel-next');
+    var dots = carousel.querySelectorAll('.carousel-dots .dot');
 
     if (slides.length === 0) return;
 
     var currentIndex = 0;
     var autoPlayInterval = null;
     var INTERVAL_MS = 5000;
-
-    // Build dot indicators
-    if (dotsContainer) {
-      slides.forEach(function (_, i) {
-        var dot = document.createElement('button');
-        dot.classList.add('carousel-dot');
-        dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
-        if (i === 0) dot.classList.add('active');
-        dot.addEventListener('click', function () {
-          goToSlide(i);
-        });
-        dotsContainer.appendChild(dot);
-      });
-    }
-
-    var dots = dotsContainer ? dotsContainer.querySelectorAll('.carousel-dot') : [];
 
     function goToSlide(index) {
       slides[currentIndex].classList.remove('active');
@@ -144,6 +132,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Arrow buttons
     if (nextBtn) nextBtn.addEventListener('click', nextSlide);
     if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+
+    // Dot indicators
+    dots.forEach(function (dot, i) {
+      dot.addEventListener('click', function () {
+        goToSlide(i);
+      });
+    });
 
     // Auto-play
     function startAutoPlay() {
@@ -195,17 +190,17 @@ document.addEventListener('DOMContentLoaded', function () {
   //    Increment / decrement quantity in the cart, then recalculate totals.
   // =========================================================================
 
-  function getCartItems() {
-    return document.querySelectorAll('.cart-item');
+  function getCartRows() {
+    return document.querySelectorAll('.cart-row');
   }
 
   function bindQuantityButtons() {
-    getCartItems().forEach(function (item) {
-      var minusBtn = item.querySelector('.qty-minus');
-      var plusBtn = item.querySelector('.qty-plus');
-      var qtyInput = item.querySelector('.qty-input');
-      var priceEl = item.querySelector('.item-price');
-      var lineTotalEl = item.querySelector('.item-line-total');
+    getCartRows().forEach(function (row) {
+      var minusBtn = row.querySelector('.qty-minus');
+      var plusBtn = row.querySelector('.qty-plus');
+      var qtyInput = row.querySelector('.qty-input');
+      var lineTotalEl = row.querySelector('.line-total');
+      var unitPrice = parseFloat(row.dataset.price) || 0;
 
       if (!qtyInput) return;
 
@@ -214,8 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (qty < 1) qty = 1;
         qtyInput.value = qty;
 
-        if (priceEl && lineTotalEl) {
-          var unitPrice = parseFloat(priceEl.dataset.price || priceEl.textContent.replace(/[^0-9.]/g, ''));
+        if (lineTotalEl) {
           lineTotalEl.textContent = '$' + (unitPrice * qty).toFixed(2);
         }
 
@@ -242,6 +236,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
       qtyInput.addEventListener('change', updateLineTotal);
     });
+
+    // Remove buttons
+    document.querySelectorAll('.remove-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var row = btn.closest('.cart-row');
+        if (row) row.remove();
+        updateCartTotals();
+      });
+    });
   }
 
   bindQuantityButtons();
@@ -256,53 +259,59 @@ document.addEventListener('DOMContentLoaded', function () {
   var MEMBER_DISCOUNT = 0.05;
 
   function updateCartTotals() {
-    var items = getCartItems();
+    var rows = getCartRows();
     var subtotal = 0;
 
-    items.forEach(function (item) {
-      var lineTotalEl = item.querySelector('.item-line-total');
+    rows.forEach(function (row) {
+      var lineTotalEl = row.querySelector('.line-total');
       if (lineTotalEl) {
         subtotal += parseFloat(lineTotalEl.textContent.replace(/[^0-9.]/g, '')) || 0;
       }
     });
 
-    var subtotalEl = document.getElementById('cart-subtotal');
-    var taxEl = document.getElementById('cart-tax');
-    var savingsEl = document.getElementById('cart-savings');
-    var totalEl = document.getElementById('cart-total');
+    var subtotalEl = document.getElementById('subtotal');
+    var taxEl = document.getElementById('tax');
+    var savingsEl = document.getElementById('memberSavings');
+    var totalEl = document.getElementById('orderTotal');
+    var promoRow = document.getElementById('promoRow');
+    var promoDiscountEl = document.getElementById('promoDiscount');
 
-    var tax = subtotal * TAX_RATE;
-
-    // Check if the member discount checkbox is active
-    var memberCheckbox = document.getElementById('member-discount');
-    var savings = 0;
-    if (memberCheckbox && memberCheckbox.checked) {
-      savings = subtotal * MEMBER_DISCOUNT;
-    }
+    var savings = subtotal * MEMBER_DISCOUNT;
+    var afterSavings = subtotal - savings;
+    var tax = afterSavings * TAX_RATE;
 
     // Apply promo discount if present
-    var promoDiscount = parseFloat(sessionStorage.getItem('promoDiscount') || '0');
-    var promoAmount = subtotal * promoDiscount;
-    var promoEl = document.getElementById('cart-promo');
+    var promoRate = parseFloat(sessionStorage.getItem('promoDiscount') || '0');
+    var promoAmount = afterSavings * promoRate;
 
-    var total = subtotal + tax - savings - promoAmount;
+    if (promoRow && promoDiscountEl) {
+      if (promoRate > 0) {
+        promoRow.style.display = 'flex';
+        promoDiscountEl.textContent = '-$' + promoAmount.toFixed(2);
+      } else {
+        promoRow.style.display = 'none';
+      }
+    }
+
+    var total = afterSavings + tax - promoAmount;
     if (total < 0) total = 0;
 
     if (subtotalEl) subtotalEl.textContent = '$' + subtotal.toFixed(2);
     if (taxEl) taxEl.textContent = '$' + tax.toFixed(2);
     if (savingsEl) savingsEl.textContent = '-$' + savings.toFixed(2);
-    if (promoEl) promoEl.textContent = '-$' + promoAmount.toFixed(2);
     if (totalEl) totalEl.textContent = '$' + total.toFixed(2);
+
+    // Update cart count badge
+    var cartCountEl = document.getElementById('cartCount');
+    if (cartCountEl) {
+      cartCountEl.textContent = rows.length;
+    }
   }
 
-  // Recalculate when member discount is toggled
-  var memberCheckbox = document.getElementById('member-discount');
-  if (memberCheckbox) {
-    memberCheckbox.addEventListener('change', updateCartTotals);
+  // Initial calculation on cart page
+  if (document.querySelector('.cart-table')) {
+    updateCartTotals();
   }
-
-  // Initial calculation
-  updateCartTotals();
 
 
   // =========================================================================
@@ -311,13 +320,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // =========================================================================
 
   (function initFilterToggle() {
-    var filterToggle = document.querySelector('.filter-toggle');
-    var filterSidebar = document.querySelector('.filter-sidebar');
+    var filterToggle = document.getElementById('filterToggle');
+    var filterSidebar = document.getElementById('filterSidebar');
     if (!filterToggle || !filterSidebar) return;
 
     filterToggle.addEventListener('click', function () {
-      var isOpen = filterSidebar.classList.toggle('open');
-      filterToggle.textContent = isOpen ? 'Hide Filters' : 'Show Filters';
+      var isOpen = filterSidebar.classList.toggle('active');
+      filterToggle.innerHTML = isOpen ? '&#9776; Hide Filters' : '&#9776; Show Filters';
       filterToggle.setAttribute('aria-expanded', isOpen);
     });
 
@@ -325,8 +334,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var closeBtn = filterSidebar.querySelector('.filter-close');
     if (closeBtn) {
       closeBtn.addEventListener('click', function () {
-        filterSidebar.classList.remove('open');
-        filterToggle.textContent = 'Show Filters';
+        filterSidebar.classList.remove('active');
+        filterToggle.innerHTML = '&#9776; Show Filters';
         filterToggle.setAttribute('aria-expanded', 'false');
       });
     }
@@ -339,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // =========================================================================
 
   (function initSortDropdown() {
-    var sortSelect = document.querySelector('.sort-select');
+    var sortSelect = document.getElementById('sortSelect');
     var productGrid = document.querySelector('.product-grid');
     if (!sortSelect || !productGrid) return;
 
@@ -416,26 +425,23 @@ document.addEventListener('DOMContentLoaded', function () {
   // =========================================================================
 
   (function initTabs() {
-    var tabContainers = document.querySelectorAll('.tabs');
+    var buttons = document.querySelectorAll('.deals-tabs .tab-btn');
+    if (buttons.length === 0) return;
 
-    tabContainers.forEach(function (container) {
-      var buttons = container.querySelectorAll('.tab-btn');
-      var parentSection = container.closest('.tabs-section') || container.parentElement;
-      var panels = parentSection.querySelectorAll('.tab-panel');
+    var panels = document.querySelectorAll('.tab-panel');
 
-      buttons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var target = btn.dataset.tab;
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = btn.dataset.tab;
 
-          // Deactivate all
-          buttons.forEach(function (b) { b.classList.remove('active'); });
-          panels.forEach(function (p) { p.classList.remove('active'); });
+        // Deactivate all
+        buttons.forEach(function (b) { b.classList.remove('active'); });
+        panels.forEach(function (p) { p.classList.remove('active'); });
 
-          // Activate selected
-          btn.classList.add('active');
-          var targetPanel = parentSection.querySelector('#' + target);
-          if (targetPanel) targetPanel.classList.add('active');
-        });
+        // Activate selected
+        btn.classList.add('active');
+        var targetPanel = document.getElementById('tab-' + target);
+        if (targetPanel) targetPanel.classList.add('active');
       });
     });
   })();
@@ -451,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var currentCount = cartCount ? parseInt(cartCount.textContent, 10) || 0 : 0;
 
     document.addEventListener('click', function (e) {
-      var btn = e.target.closest('.add-to-cart');
+      var btn = e.target.closest('.add-to-cart-btn');
       if (!btn) return;
 
       // Animate the button
@@ -483,9 +489,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // =========================================================================
 
   (function initPromoCode() {
-    var promoInput = document.querySelector('.promo-input');
-    var promoBtn = document.querySelector('.promo-apply');
-    var promoMsg = document.querySelector('.promo-message');
+    var promoInput = document.getElementById('promoCode');
+    var promoBtn = document.getElementById('applyPromo');
+    var promoMsg = document.getElementById('promoMsg');
     if (!promoInput || !promoBtn) return;
 
     promoBtn.addEventListener('click', function () {
@@ -495,20 +501,20 @@ document.addEventListener('DOMContentLoaded', function () {
         sessionStorage.setItem('promoDiscount', '0.10');
         if (promoMsg) {
           promoMsg.textContent = 'Promo applied! 10% off your order.';
-          promoMsg.className = 'promo-message success';
+          promoMsg.style.color = '#27ae60';
         }
         promoBtn.disabled = true;
         promoInput.disabled = true;
       } else if (code === '') {
         if (promoMsg) {
           promoMsg.textContent = 'Please enter a promo code.';
-          promoMsg.className = 'promo-message error';
+          promoMsg.style.color = '#E31837';
         }
       } else {
         sessionStorage.setItem('promoDiscount', '0');
         if (promoMsg) {
           promoMsg.textContent = 'Invalid promo code. Try again.';
-          promoMsg.className = 'promo-message error';
+          promoMsg.style.color = '#E31837';
         }
       }
 
@@ -557,11 +563,11 @@ document.addEventListener('DOMContentLoaded', function () {
   // =========================================================================
 
   (function initNewsletter() {
-    var form = document.querySelector('.newsletter-form');
+    var form = document.getElementById('newsletterForm');
     if (!form) return;
 
-    var emailInput = form.querySelector('input[type="email"], .newsletter-email');
-    var msgEl = form.querySelector('.newsletter-message');
+    var emailInput = form.querySelector('input[type="email"]');
+    var msgEl = document.getElementById('newsletterMsg');
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -596,16 +602,16 @@ document.addEventListener('DOMContentLoaded', function () {
   // =========================================================================
 
   (function initBackToTop() {
-    var btn = document.querySelector('.back-to-top');
+    var btn = document.getElementById('backToTop');
     if (!btn) return;
 
     var SHOW_AFTER_PX = 400;
 
     window.addEventListener('scroll', function () {
       if (window.scrollY > SHOW_AFTER_PX) {
-        btn.classList.add('visible');
+        btn.classList.add('show');
       } else {
-        btn.classList.remove('visible');
+        btn.classList.remove('show');
       }
     });
 

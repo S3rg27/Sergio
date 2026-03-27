@@ -9,6 +9,19 @@
 </head>
 <body>
 
+  <!-- Age Verification Modal -->
+  <div class="age-modal" id="ageModal">
+    <div class="age-modal-content">
+      <div style="font-size:3rem;margin-bottom:16px;">&#127866;</div>
+      <h2>Age Verification Required</h2>
+      <p>You must be 21 years or older to enter this site. Please verify your age.</p>
+      <div class="age-buttons">
+        <button class="btn btn-primary" id="ageYes">I am 21+</button>
+        <button class="btn btn-outline" id="ageNo">I am under 21</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Top Utility Bar -->
   <div class="utility-bar">
     <div class="container utility-bar-inner">
@@ -499,6 +512,7 @@
       });
     })();
   </script>
+  <script src="script.js"></script>
 
 </body>
 </html>
